@@ -11,123 +11,6 @@ import { ErrorCode } from '../../services/constant'
 import { modArrData } from './Function'
 
 
-const data = [
-    {
-        "approvedStatus": 1,
-        "comments": null,
-        "stateName": "Requested",
-        "roleName": "Admin",
-        "user": "DemoSRMB Admin",
-        "createdAt": "2023-10-09T09:47:34.000Z",
-        "labelColor": "#E3BE5D",
-        "backgroundColor": "#FFF4BB",
-    },
-    {
-        "approvedStatus": 1,
-        "comments": null,
-        "stateName": "CRM",
-        "roleName": "CRM",
-        "user": "DemoSRMB Admin",
-        "createdAt": "2023-10-09T12:32:10.000Z",
-        "labelColor": "#54C0A0",
-        "backgroundColor": "#BBFFEB",
-    },
-    {
-        "approvedStatus": 1,
-        "comments": null,
-        "stateName": "Purchase",
-        "roleName": "Purchase",
-        "user": "DemoSRMB Admin",
-        "createdAt": "2023-10-09T12:32:32.000Z",
-        "labelColor": "#C372CA",
-        "backgroundColor": "#FBC9FF",
-    },
-    {
-        "approvedStatus": 0,
-        "comments": null,
-        "stateName": "Couriered",
-        "roleName": "Couriered",
-        "user": "DemoSRMB Admin",
-        "createdAt": "2023-10-09T13:36:32.000Z",
-        "labelColor": "#57C95A",
-        "backgroundColor": "#9FF7A2",
-    }
-]
-
-// let data = [
-//     {
-//         id: 1,
-//         level: "1",
-//         label: "Requested",
-//         labelColor: "#E3BE5D",
-//         backgroundColor: "#FFF4BB",
-//         steps: [
-//             {
-//                 label: "request Generate",
-//                 date: "2023-07-12T20:17:46.384Z"
-//             },
-//             {
-//                 label: "request Approved",
-//                 date: "2023-07-13T20:17:46.384Z",
-//                 approvedBy: "Ronit Roy",
-//                 approverRole: "Admin"
-//             }
-//         ],
-//         showHide: false
-//     },
-//     {
-//         id: 2,
-//         level: "2",
-//         label: "CRM",
-//         labelColor: "#54C0A0",
-//         backgroundColor: "#BBFFEB",
-//         steps: [
-//             {
-//                 label: "Crm Approved",
-//                 date: "2023-07-15T20:17:46.384Z",
-//                 approvedBy: "Ronit Roy",
-//                 approverRole: "Admin"
-//             },
-//         ],
-//         showHide: false
-//     },
-//     {
-//         id: 3,
-//         level: "4",
-//         label: "Couriered",
-//         labelColor: "#C372CA",
-//         backgroundColor: "#FBC9FF",
-//         steps: [
-//             {
-//                 label: "DTDC Courier",
-//                 date: "2011-07-25T20:17:46.384Z",
-//                 courierSendBy: "Palash Dey",
-//                 senderRole: "Admin",
-//                 trackId: "WER32F5435331"
-//             },
-//         ],
-//         showHide: false
-//     },
-//     {
-//         id: 4,
-//         level: "5",
-//         label: "Delivered",
-//         labelColor: "#57C95A",
-//         backgroundColor: "#9FF7A2",
-//         steps: [
-//             {
-//                 label: "DTDC Courier",
-//                 date: "2011-07-25T20:17:46.384Z",
-//                 address: "Kolkata",
-//                 senderRole: "Admin",
-//                 trackId: "WER32F5435331"
-//             },
-//         ],
-//         showHide: false
-//     },
-
-// ]
-
 export default class RedemptionDetails extends Component {
     constructor(props) {
         super(props)
@@ -195,16 +78,16 @@ export default class RedemptionDetails extends Component {
                         {/* <View style={{ marginBottom: 7 }}>
                             <Text style={{ color: "#172834", fontSize: 12, fontFamily: FontFamily.FONTS.INTER.BOLD, marginLeft: 5 }}>iPhone 6</Text>
                         </View> */}
-                        <View style={{ borderRadius: 15, backgroundColor: this.state.itemData.approvedStatus == 0 ? "#E3BE5D" : this.state.itemData.approvedStatus == 1 ? '#9ff7a2' : '#C372CA', flexDirection: "row", paddingVertical: 2, paddingHorizontal: 5, alignItems: "center", alignSelf: "flex-start" }}>
+                        <View style={{ borderRadius: 15, flexDirection: "row", paddingVertical: 2, paddingHorizontal: 5, alignItems: "center", alignSelf: "flex-start" }}>
                             {/* <View style={{ borderRadius: 100, backgroundColor: "#C372CA", alignItems: "flex-start", justifyContent: "center", height: 21, width: 21 }}>
                                 <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.BOLD, marginLeft: 5, textAlign: "center" }}>L4</Text>
                             </View> */}
-                            <Text style={{ color: "#161616", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 5, marginRight: 5, textAlign: "center" }}>{this.state.itemData.approvedStatus == 0 ? "Pending" : this.state.itemData.approvedStatus == 1 ? "Approved  by Admin" : "Rejected by Admin"}</Text>
+                            {/* <Text style={{ color: "#161616", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 5, marginRight: 5, textAlign: "center" }}>{this.state.itemData.approvedStatus == 0 ? "Pending" : this.state.itemData.approvedStatus == 1 ? "Approved  by Admin" : "Rejected by Admin"}</Text> */}
                         </View>
                     </View>
                     <View style={{ flex: 1 }} />
                     <View>
-                        <Text style={{ color: "#FF2E00", fontSize: 24, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, textAlign: "right" }}>-{this.state.itemData.point}</Text>
+                        <Text style={{ color: "#FF2E00", fontSize: 24, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, textAlign: "right" }}>{this.state.itemData.point}</Text>
                         <Text style={{ color: "#172834", fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, textAlign: "right", top: -10 }}>Points</Text>
                     </View>
                 </View>
@@ -249,16 +132,16 @@ export default class RedemptionDetails extends Component {
                                 <View style={[styles.processLine, { borderColor: "#9A9A9A" }]} />
                             </View>
                             <View>
-                                <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, marginLeft: 5, marginRight: 5 }}>{item.approvedStatus == 1 ? "Approved" : item.approvedStatus == 0 ? "Requested" : "Rejected"}</Text>
+                                {/* <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, marginLeft: 5, marginRight: 5 }}>{item.approvedStatus == 1 ? "Approved" : item.approvedStatus == 0 ? "Requested" : "Rejected"}</Text> */}
                                 <View style={{ flexDirection: "row" }}>
                                     <SvgComponent svgName={"calender"} height={15} width={15} strokeColor={"#5E5E5E"} />
                                     <Text style={{ color: "#000", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, marginLeft: 5, marginRight: 5 }}>{DateConvert.viewDateFormat(item.createdAt)}</Text>
                                 </View>
-                                <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, marginLeft: 5, marginRight: 5 }}>{item.approvedStatus == 1 ? "Approved" : item.approvedStatus == 0 ? "Requested" : "Rejected"} by {"\n"}{item.user} {"\n"}
-                                    <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 5, marginRight: 5 }}>
-                                        {item.roleName}
-                                    </Text>
+                                {/* <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, marginLeft: 5, marginRight: 5 }}>{item.approvedStatus == 1 ? "Approved" : item.approvedStatus == 0 ? "Requested" : "Rejected"} by {"\n"}{item.user} {"\n"} */}
+                                <Text style={{ color: "#5E5E5E", fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 5, marginRight: 5 }}>
+                                    {item.requestedRoleName}
                                 </Text>
+                                {/* </Text> */}
                             </View>
                         </View>
 

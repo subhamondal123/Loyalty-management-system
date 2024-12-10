@@ -38,3 +38,4 @@ export { default as DynamicProgressBar } from './progress-bar';
 export { default as ImageViewModal } from './imageViewModal';
 export { default as BottomModal } from './bottom-modal';
 export { default as MonthlyCalender } from './monthly-calender';
+export { default as ImagePreview } from './imagePreview/index';

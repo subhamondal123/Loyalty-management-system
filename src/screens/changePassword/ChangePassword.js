@@ -54,7 +54,6 @@ class ChangePassword extends React.Component {
 
     _load = async () => {
         let userdata = await StorageDataModification.userCredential({}, "get");
-        console.log("userDatatatata---===", JSON.stringify(userdata.loginType));
         this.setState({
             userCredential: userdata
         })
@@ -138,11 +137,9 @@ class ChangePassword extends React.Component {
             //     "moduleType": "CRM",
             //     "masterMdouleTypeId": "19"
             //   }
-            console.log("changepassword::::reqDatata-----", JSON.stringify(reqData));
             this.setState({ pageLoader: true });
             if (this.state.userCredential.loginType === "customer") {
                 let responseData = await MiddlewareCheck("changepasswordCustomer", reqData, this.props);
-                console.log("changepassword::::Ressss-----", JSON.stringify(responseData));
                 this.setState({ pageLoader: false });
                 if (responseData.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                     await StorageDataModification.removeLoginData();
@@ -157,7 +154,6 @@ class ChangePassword extends React.Component {
                 }
             } else {
                 let responseData = await MiddlewareCheck("changepasswordEmployee", reqData, this.props);
-                console.log("changepasswordEmployee:::----", JSON.stringify(responseData));
                 this.setState({ pageLoader: false });
                 if (responseData.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                     await StorageDataModification.removeLoginData();

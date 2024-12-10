@@ -146,37 +146,6 @@ class AllRecentLiftingList extends React.Component {
         this.setState({ recentLoader: false, listLoader: false })
     }
 
-
-    // recentLiftingEditPermissionApiCall = async () => {
-    //     let responseData = await MiddlewareCheck("fetchSaleEditPermission", reqData, props);
-    //     console.log("fetchSaleEditPermission:::response:::", JSON.stringify(responseData));
-    //     let totalHrs = 0;
-    //     if (responseData) {
-    //         if (responseData && responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-    //             if (responseData.response && responseData.response.length > 0) {
-    //                 totalHrs = responseData.response[0].days * 24;
-    //                 const createDate = new Date(createdAt);
-    //                 const currentDate = new Date();
-    //                 const differenceInMs = currentDate - createDate;
-    //                 const differenceInHours = differenceInMs / (1000 * 60 * 60);
-
-    //                 if (differenceInHours < totalHrs) {
-    //                     console.log("ififififi----");
-    //                     return true;
-    //                 } else {
-    //                     console.log("elseeee----");
-    //                     return false;
-    //                 }
-    //             }
-    //         } else {
-    //             return false;
-    //         }
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-
     skelitonSec = () => {
 
         return (

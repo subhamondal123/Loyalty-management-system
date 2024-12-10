@@ -8,6 +8,7 @@ import { ErrorCode } from '../../../services/constant'
 import { modPassbookData } from './function'
 import { Modal } from '../../../shared'
 import styles from './styles'
+import { StorageDataModification } from '../../../services/common-view-function'
 
 export default class ActivePointAndLocationSelectionTab extends Component {
     constructor(props) {
@@ -27,7 +28,8 @@ export default class ActivePointAndLocationSelectionTab extends Component {
             isApiCall: true,
             listLoader: true,
             passbookArr: [],
-            isVisibleModal: false
+            isVisibleModal: false,
+            userInfo:{}
         }
     }
     onSelectLocationData = (val) => {
@@ -35,27 +37,30 @@ export default class ActivePointAndLocationSelectionTab extends Component {
     }
 
     componentDidMount = async () => {
+        let userInfo = await StorageDataModification.userCredential({}, "get");
+        this.setState({userInfo:userInfo})
+
         this.setState({
             userId: this.props.route.params.propData ? this.props.route.params.propData.id : null
         })
-        this._unsubscribe = this.props.navigation.addListener(
-            'focus', async () => {
+        // this._unsubscribe = this.props.navigation.addListener(
+        //     'focus', async () => {
                 this.setState({
                     borderColor: this.props.screen == undefined || this.props.screen == null ? "#839CAE" : this.props.screen == "profile" ? "fff" : "fff",
                 })
                 await this.getChartData()
                 // await this.getLiftingHistory()
-            })
+            // })
 
     }
     getChartData = async () => {
-        this.setState({ activeLoader: false })
+        this.setState({ activeLoader: true })
         let reqData = {
+            // "refCustomerId":this.props.route.params.propData ? this.props.route.params.propData.id : this.state.userInfo.userId,
             // "refUserId": this.props.route.params ? this.props.route.params.propData ? this.props.route.params.propData : null : null
-            "refUserId": this.props.route.params.propData ? this.props.route.params.propData.id : null
+            "refUserId": this.props.route.params.propData ? this.props.route.params.propData.id : this.state.userInfo.customerId.toString()
         }
         let responseData = await MiddlewareCheck("dashboardChart", reqData, this.props)
-
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.setState({ chartData: responseData.response })
@@ -152,7 +157,7 @@ export default class ActivePointAndLocationSelectionTab extends Component {
     render() {
         return (
             <View>
-                <View style={{ flexDirection: "row", marginHorizontal: 15, marginTop: 10 }}>
+                <View style={{ flexDirection: "row", marginHorizontal: 15}}>
                     {this.state.activeLoader ? null :
                         <>
                             <View style={{ flexDirection: "row", flex: 1 }}>

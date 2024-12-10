@@ -93,7 +93,6 @@ class LmsLocationMapping extends React.Component {
         //........
         if (this.props.type == "lastHierarcyField") {
             let responseData = await MiddlewareCheck("getUserMappedLastLevelLocations", {}, this.props);
-            // console.log("getUserMappedLastLevelLocations:::Res----", JSON.stringify(responseData));
 
             if (responseData) {
                 if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {

@@ -124,13 +124,16 @@ export default class LmsDashboard extends Component {
 
     activitySec = () => {
         const onSelect = (type) => {
-            if (type == "ConfirmNewLifting") {
+            if (type == "ConfirmNewLifting" || type == "RequestRedemtionCategory" || type == "Catalogue" || type == "PassbookAndRedemption") {
                 this.props.navigation.navigate("CustomerListTab", { data: type })
             } else if (type == "NewCustomerRegistration") {
                 this.props.navigation.navigate("NewCustomerRegistration", { data: type })
-            } else if (type == "RequestRedemtionCategory") {
-                this.props.navigation.navigate(type, { data: type })
             }
+            // else if (type == "RequestRedemtionCategory") {
+            //     this.props.navigation.navigate(type, { data: type })
+            // } else if (type == "Catalogue") {
+            //     this.props.navigation.navigate(type, { data: type })
+            // }
         }
         return (
             <Animated.View style={{ marginHorizontal: 15, borderRadius: 15, backgroundColor: "#FFF2F3", justifyContent: "center", alignItems: "center", marginTop: 20, paddingBottom: 10, paddingHorizontal: 10, transform: [{ scale: this.state.activityAnim }] }}>
@@ -173,29 +176,6 @@ export default class LmsDashboard extends Component {
                         </View>
                         <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Customer{"\n"}Registration</Text>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity
-                        onPress={() => onSelect("RequestRedemtionCategory")}
-                        style={styles.activityBox}>
-                        <View style={{ paddingBottom: 10 }}>
-                            <SvgComponent svgName={"threeDBoxWithTwoCircleRotate"} height={28} width={28} strokeColor={"#F13748"} />
-
-                        </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Request{"\n"}Redemption</Text>
-
-                    </TouchableOpacity> */}
-                    {/* <TouchableOpacity
-                        onPress={() => onSelect("InfluencerActivityDetails")}
-                        style={styles.activityBox}>
-                        <View style={{ paddingBottom: 10 }}>
-                            <SvgComponent svgName={"doubleUser"} height={26} width={26} strokeColor={"#F13748"} />
-
-                        </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Influencer{"\n"}Activity</Text>
-
-                    </TouchableOpacity> */}
-                </View>
-
-                {/* <View style={{ flexDirection: "row", marginTop: 10 }}>
                     <TouchableOpacity
                         onPress={() => onSelect("RequestRedemtionCategory")}
                         style={styles.activityBox}>
@@ -206,48 +186,33 @@ export default class LmsDashboard extends Component {
                         <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Request{"\n"}Redemption</Text>
 
                     </TouchableOpacity>
+                </View>
+
+                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                    <TouchableOpacity
+                        onPress={() => onSelect("Catalogue")}
+                        style={styles.activityBox}>
+                        <View style={{ paddingBottom: 10 }}>
+                            <SvgComponent svgName={"threeDBoxRotate"} height={28} width={28} strokeColor={"#F13748"} />
+
+                        </View>
+                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Catalogue</Text>
+
+                    </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => onSelect("StockUpdatePage")}
+                        onPress={() => onSelect("PassbookAndRedemption")}
                         style={styles.activityBox}>
                         <View style={{ paddingBottom: 5 }}>
                             <SvgComponent svgName={"threeDBoxRotate"} height={32} width={32} strokeColor={"#F13748"} />
 
                         </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Stock{"\n"}Update</Text>
+                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Passbook &{"\n"}Redemption</Text>
 
                     </TouchableOpacity>
 
-                </View> */}
+                </View>
 
-                {/* <View style={{ flexDirection: "row", marginTop: 10 }}>
-                    <TouchableOpacity style={{ borderWidth: 0.5, borderColor: "#F4C5C9", backgroundColor: "#fff", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center", justifyContent: "center", height: 90, width: Dimension.width / 3 - 20, marginHorizontal: 5 }}>
-                        <View style={{ paddingBottom: 10 }}>
-                            <SvgComponent svgName={"lmsUpload"} height={26} width={26} strokeColor={"#F13748"} />
-
-                        </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Upload{"\n"}Data</Text>
-
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => onSelect("newOrder")}
-                        style={{ borderWidth: 0.5, borderColor: "#F4C5C9", backgroundColor: "#fff", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center", justifyContent: "center", height: 90, width: Dimension.width / 3 - 20, marginHorizontal: 5 }}>
-                        <View style={{ paddingBottom: 10 }}>
-                            <SvgComponent svgName={"threeDCubeScan"} height={30} width={30} strokeColor={"#F13748"} />
-
-                        </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>New{"\n"}Order</Text>
-
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ borderWidth: 0.5, borderColor: "#F4C5C9", backgroundColor: "#fff", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center", justifyContent: "center", height: 90, width: Dimension.width / 3 - 20, marginHorizontal: 5 }}>
-                        <View style={{ paddingBottom: 10 }}>
-                            <SvgComponent svgName={"designation"} height={26} width={26} strokeColor={"#F13748"} />
-
-                        </View>
-                        <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 12, textAlign: "center" }}>Refer a{"\n"}Customer</Text>
-
-                    </TouchableOpacity>
-                </View> */}
             </Animated.View>
         )
     }

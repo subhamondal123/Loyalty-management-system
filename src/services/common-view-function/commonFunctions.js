@@ -164,105 +164,6 @@ export function decrementByTwoDecimal(number) {
     return result;
 }
 
-//modify heirarcy location data 
-
-// const data = [
-//     [
-//       {
-//         "id": 1948,
-//         "typeId": 4,
-//         "name": "NORTH 24 PARGANAS - 1-TMT",
-//         "typeName": "Zone",
-//         "slNo": 4
-//       },
-//       {
-//         "id": 858,
-//         "typeId": 3,
-//         "name": "North 24 Parganas",
-//         "typeName": "District",
-//         "slNo": 3
-//       },
-//       {
-//         "id": 37,
-//         "typeId": 2,
-//         "name": "West Bengal",
-//         "typeName": "State",
-//         "slNo": 2
-//       },
-//       {
-//         "id": 1,
-//         "typeId": 1,
-//         "name": "India",
-//         "typeName": "Country",
-//         "slNo": 1
-//       }
-//     ],
-//     [
-//       {
-//         "id": 1949,
-//         "typeId": 4,
-//         "name": "South 24 PARGANAS - 1-TMT",
-//         "typeName": "Zone",
-//         "slNo": 4
-//       },
-//       {
-//         "id": 858,
-//         "typeId": 3,
-//         "name": "South 24 Parganas",
-//         "typeName": "District",
-//         "slNo": 3
-//       },
-//       {
-//         "id": 37,
-//         "typeId": 2,
-//         "name": "West Bengal",
-//         "typeName": "State",
-//         "slNo": 2
-//       },
-//       {
-//         "id": 1,
-//         "typeId": 1,
-//         "name": "India",
-//         "typeName": "Country",
-//         "slNo": 1
-//       }
-//     ],
-//     [
-//       {
-//         "id": 1950,
-//         "typeId": 4,
-//         "name": "west 24 PARGANAS - 1-TMT",
-//         "typeName": "Zone",
-//         "slNo": 4
-//       },
-//       {
-//         "id": 858,
-//         "typeId": 3,
-//         "name": "South 24 Parganas",
-//         "typeName": "District",
-//         "slNo": 3
-//       },
-//       {
-//         "id": 37,
-//         "typeId": 2,
-//         "name": "West Bengal",
-//         "typeName": "State",
-//         "slNo": 2
-//       },
-//       {
-//         "id": 1,
-//         "typeId": 1,
-//         "name": "India",
-//         "typeName": "Country",
-//         "slNo": 1
-//       }
-//     ]
-//   ];
-
-// result 
-
-// [{"hierarchyTypeId":"4","hierarchyDataId":"1948"},{"hierarchyTypeId":"4","hierarchyDataId":"1949"},{"hierarchyTypeId":"4","hierarchyDataId":"1950"}]
-
 export function modifyHierarcyLocationData(data) {
     const modifiedData = [];
 
@@ -287,3 +188,7 @@ export function modifyHierarcyLocationData(data) {
 
     return modifiedData
 }
+
+export function getFileExtension(filename) {
+    return filename.split('.').pop();
+  };

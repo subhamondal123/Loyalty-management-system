@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Style';
 import { DeviceInfo } from '../../services/config';
-import { Toaster } from '../../services/common-view-function';
+import { StorageDataModification, Toaster } from '../../services/common-view-function';
 import {
     SafeAreaView,
     Text,
@@ -21,6 +21,9 @@ import {
 import { TextButton } from '../../shared';
 import LottieViewLoad from '../../shared/lottieViewLoad';
 import { PLAYSTORE_URL } from '../../../globalConstant';
+import { MiddlewareCheck } from '../../services/middleware';
+import { ErrorCode } from '../../services/constant';
+import { CommonActions } from '@react-navigation/native';
 
 class NewVersionAvailable extends React.Component {
     constructor(props) {
@@ -31,10 +34,31 @@ class NewVersionAvailable extends React.Component {
     }
 
     componentDidMount() {
-        console.log("this.props.route.params",this.props.data)
     }
 
     onUpdate = async () => {
+        let userInfo = await StorageDataModification.userCredential({}, "get")
+        if (userInfo) {
+            if (userInfo.loginType == "employee") {
+                let responseData = await MiddlewareCheck("logout", {});
+                if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                    await StorageDataModification.removeLoginData();
+                    await StorageDataModification.removeAllStorageData();
+                    this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
+                } else {
+                    Toaster.ShortCenterToaster(responseData.message);
+                }
+            } else {
+                let responseData = await MiddlewareCheck("customerLogout", {});
+                if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                    await StorageDataModification.removeLoginData();
+                    await StorageDataModification.removeAllStorageData();
+                    this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
+                } else {
+                    Toaster.ShortCenterToaster(responseData.message);
+                }
+            }
+        }
         Linking.openURL(this.state.versionData.appLink)
     }
 

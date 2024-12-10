@@ -411,3 +411,11 @@ export const FileType = {
     "htm": "web",
     "HTM": "web",
 }
+
+export const ModuleType = {
+    "SFA_APP": "5",
+    "CRM_APP": "4",
+    "MMS_APP": "6",
+    "BANDHAN_APP": "8",
+    "LMS_APP":"16"
+}

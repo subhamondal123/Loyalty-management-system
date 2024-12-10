@@ -13,6 +13,7 @@ import SvgComponent from '../../../assets/svg';
 import DynamicCategoryTab from '../dynamicCategoryTab/DynamicCategoryTab';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import LmsLocationMapping from '../lmsLocationMapping';
+import { StorageDataModification } from '../../../services/common-view-function';
 
 
 const tabData = [
@@ -66,11 +67,15 @@ class AllInfluencerList extends Component {
             isApiCall: true,
             customerList: [],
             customerIdArr: [],
-            searchText: ""
+            searchText: "",
+            userInfo: {}
         }
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
+
+        let userInfo = await StorageDataModification.userCredential({}, "get");
+        this.setState({ userInfo: userInfo })
         this.load()
     }
 
@@ -82,6 +87,7 @@ class AllInfluencerList extends Component {
         this.setState({ refreshing: false, });
         if (this.props.Sales360Redux.routeData.hierarchyTypeId && this.props.Sales360Redux.routeData.hierarchyDataId) {
             let dataReq = {
+                "refCustomerId": this.state.userInfo.customerId.toString(),
                 "mstSlNo": this.props.requestData.selectedCustomerType.mstSlNo,
                 "limit": this.state.limit.toString(),
                 "offset": (this.state.pageNum * this.state.limit).toString(),
@@ -109,9 +115,7 @@ class AllInfluencerList extends Component {
         }
     }
     fetchListData = async (dataReq) => {
-        console.log("dataReq:::====", JSON.stringify(dataReq));
         let responseData = await MiddlewareCheck("getAllInfluencerList", dataReq, this.props);
-        console.log("dataReq:::====responseData", JSON.stringify(responseData));
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 let listData = modifyData(responseData);
@@ -171,6 +175,11 @@ class AllInfluencerList extends Component {
                     <Image source={item.profilePic.length == 0 ? ImageName.USER_IMG : { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + item.profilePic }} style={{ height: 65, width: 65, resizeMode: 'cover', borderRadius: 100, borderWidth: 0.3, borderColor: "#D1D1D1" }} />
                     <View style={{}}>
                         <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginTop: 8, textAlign: "center" }} numberOfLines={2}>{item.custBusinessName ? item.custBusinessName : item.customerName}</Text>
+                        <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 9, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, textAlign: "center" }} numberOfLines={2}>{"(" + item.phone + ")"}</Text>
+                        {item.locationData.map((i, k) => (
+                            <Text key={k} style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 9, fontFamily: FontFamily.FONTS.POPPINS.BOLD, textAlign: "center" }} >{"(" + i.name + ")"}</Text>
+
+                        ))}
                     </View>
                 </TouchableOpacity>
             </View>

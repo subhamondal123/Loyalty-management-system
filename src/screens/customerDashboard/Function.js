@@ -3,8 +3,8 @@ import { App_uri } from "../../services/config";
 export function modRecentLiftingData(data) {
     let respData = { list: [], totalMtd: 0, count: 0 };
     if (data.details) {
-        let total = getTotalMtd(data)
-        respData.totalMtd = total;
+        // let total = getTotalMtd(data)
+        // respData.totalMtd = total;
         respData.count = data.count;
         for (let i = 0; i < data.details.length; i++) {
             let modObj = {};
@@ -157,7 +157,7 @@ export function modMonthlyPointData(data) {
             if (data[i].point == undefined || data[i].point == null) {
                 modObj["y"] = "";
             } else {
-                modObj["y"] = parseInt(data[i].point);
+                modObj["y"] = parseFloat((data[i].point).toFixed(2));
             }
             respArr.push(modObj);
         }

@@ -132,8 +132,39 @@ const styles = StyleSheet.create({
         color: Color.COLOR.BLACK.PURE_BLACK,
         fontSize: FontSize.XS,
         fontFamily: FontFamily.FONTS.POPPINS.MEDIUM,
-    }
+    },
 
+    // --------------------------------
+    modalview: {
+        backgroundColor: Color.COLOR.WHITE.PURE_WHITE,
+        // paddingBottom: Padding.PADDING.NORMAL_PX_PADDING.NORMAL_PADDING_30PX,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        width: Dimension.width / 1.1,
+        // maxHeight: Dimension.height,
+        alignSelf: 'center',
+        // right: 0,
+        // left: 0,
+        bottom: -21,
+        position: 'absolute',
+        // position: 'absolute',
+    },
+
+    dashUnderline: {
+        borderStyle: 'dashed',
+        borderColor: Color.COLOR.BLUE.LOTUS_BLUE,
+        borderWidth: 0.7,
+        marginHorizontal: 8
+    },
+    dropdownSec: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 15,
+        height: 28,
+        width: 28,
+        backgroundColor: '#9298a9',
+        borderRadius: 100,
+    },
 });
 
 export default styles;

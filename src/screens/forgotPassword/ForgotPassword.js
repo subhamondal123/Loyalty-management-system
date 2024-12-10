@@ -7,6 +7,7 @@ import {
     ScrollView,
     Image,
     TouchableOpacity,
+    ActivityIndicator,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -21,6 +22,7 @@ import {
 import { Loader, TextInputBox } from "../../shared";
 import { validateModifiedData } from "./Function";
 import styles from "./Style";
+import { Toaster } from "../../services/common-view-function";
 
 class ForgotPassword extends React.Component {
     constructor(props) {
@@ -29,6 +31,7 @@ class ForgotPassword extends React.Component {
             userCredentialText: "",
             inputActive: false,
             pageLoader: false,
+            buttonLoader: false
         };
     }
 
@@ -51,19 +54,19 @@ class ForgotPassword extends React.Component {
         let modifiedData = validateModifiedData(data);
         if (modifiedData.isValidated) {
             let reqData = {
-                email: this.state.userCredentialText
+                userName: this.state.userCredentialText
             };
-            this.setState({ pageLoader: true });
-            let responseData = await MiddlewareCheck("forgetpassword", reqData);
-            if (responseData.error === ErrorCode.ERROR.ERROR.WITHOUT_ERROR && ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                let userInfo = responseData.data.userInfo;
-                userInfo["userCredential"] = this.state.userCredentialText;
-                apiSuccessResponseValidator(responseData);
-                this.props.navigation.navigate("MailCheck", { passwordResData: userInfo });
+            this.setState({ buttonLoader: true });
+            let responseData = await MiddlewareCheck("requestForPassword", reqData);
+            if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                // let userInfo = responseData.data.userInfo;
+                // userInfo["userCredential"] = this.state.userCredentialText;
+                Toaster.ShortCenterToaster(responseData.message);
+                this.props.navigation.navigate("RequestForPasswordSuccess");
             } else {
-                apiErrorResponseValidator(responseData)
+                Toaster.ShortCenterToaster(responseData.message);
             }
-            this.setState({ pageLoader: false });
+            this.setState({ buttonLoader: false });
         }
     };
 
@@ -131,13 +134,17 @@ class ForgotPassword extends React.Component {
                                     </View>
 
                                     <View style={styles.buttonSection}>
-                                        <TouchableOpacity
-                                            style={styles.buttonView}
-                                            activeOpacity={0.9}
-                                            onPress={() => this.onSubmit()}
-                                        >
-                                            <Text style={styles.buttonText}>Submit</Text>
-                                        </TouchableOpacity>
+                                        {this.state.buttonLoader ? <ActivityIndicator />
+
+                                            :
+                                            <TouchableOpacity
+                                                style={styles.buttonView}
+                                                activeOpacity={0.9}
+                                                onPress={() => this.onSubmit()}
+                                            >
+                                                <Text style={styles.buttonText}>Submit</Text>
+                                            </TouchableOpacity>
+                                        }
                                     </View>
                                 </View>
                             </View>

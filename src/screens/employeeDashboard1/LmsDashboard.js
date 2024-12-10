@@ -92,7 +92,6 @@ export default class LmsDashboard extends Component {
         }
         this.setState({ recentLoader: true })
         let responseData = await MiddlewareCheck("fetchRecentSecondarySalesList", reqData, this.props);
-        console.log("fetchRecentSecondarySalesList::::resssss------", JSON.stringify(responseData));
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 let modifyData = modRecentLiftingData(responseData.response);

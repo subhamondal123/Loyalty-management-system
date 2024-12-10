@@ -25,9 +25,9 @@ import {
     loginUserTypeData
 } from '../../redux/Sales360Action';
 import { modCustomerLoginData, modLoginData, modYearData, modifyCountryArrData, modifyLocationMappedData, modifyMenuPermisionData } from "./Function";
-import { BigTextButton, BottomModal, Loader, TextInputBox } from "../../shared";
+import { BigTextButton, BottomModal, DropdownInputBox, Loader, Modal, TextInputBox } from "../../shared";
 import { MiddlewareCheck, MiddlewareOnlyApiCheck } from "../../services/middleware";
-import { ErrorCode } from "../../services/constant";
+import { CommonData, ErrorCode } from "../../services/constant";
 import { DataValidator } from "../../validators";
 import { CommonActions } from "@react-navigation/native";
 import { AppInfo, DeviceInfo } from '../../services/config';
@@ -78,7 +78,9 @@ class LogIn extends React.Component {
             otp: "",
             timer: 30,
             isTimerStarted: false,
-            isVisibleModal: false
+            selectedCustomerObj: {},
+            loginArr: [],
+            openModal: false,
         };
     }
 
@@ -93,13 +95,12 @@ class LogIn extends React.Component {
     _onGetAppVersionInfo = async () => {
         let reqData = { "packageName": AppInfo.getAppPackageName(), "appIndex": APP_INDEX }
         let responseData = await MiddlewareOnlyApiCheck("getCurrentAppVersionInfo", reqData);
-        console.log("getCurrentAppVersionInfo---", JSON.stringify(responseData))
         if (responseData) {
             if (responseData.error === ErrorCode.ERROR.ERROR.WITHOUT_ERROR && responseData.respondcode === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.setState({ versionData: responseData.data })
                 if (responseData.data.version !== AppInfo.getCurrentAppVersion()) {
                     if (responseData.data.isUpdate == 2) {
-                        this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'NewVersionAvailable',"data": responseData.data }] }));
+                        this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'NewVersionAvailable', "data": responseData.data }] }));
                     } else {
                         if (responseData.data.isUpdate == 1) {
                             Toaster.LongCenterToaster("A new update is available. You can update the apk.");
@@ -474,119 +475,6 @@ class LogIn extends React.Component {
         )
     }
 
-    _onLogin = async (type) => {
-        this.state.userId = this.state.userId.replace(/\s+/g, '');
-        let errorCount = 0;
-        let msg = "";
-        let data = {
-            userId: this.state.userId,
-            password: this.state.password
-        }
-        if (data.userId == null || data.userId == undefined || data.userId.length == 0) {
-            msg = "Please enter User ID !";
-            errorCount++;
-        }
-        // else if (emailModValidator(data.userId) == false) {
-        //     msg = AlertMessage.MESSAGE.EMAIL_PASSWORD.INCORRECT;
-        //     errorCount++;
-        // }
-        else if (data.password == null || data.password == undefined || data.password.length == 0) {
-            msg = AlertMessage.MESSAGE.PASSWORD.PASSWORD_EMPTY;
-            errorCount++;
-        }
-        this.setState({ alertMessage: msg })
-        if (errorCount === 0) {
-            this.setState({ alertMessage: "" });
-
-
-            if (type == "customer") {
-                let reqData = {
-                    "username": this.state.userId,
-                    "password": this.state.password,
-                    "platform": Platform.OS,
-                    "deviceId": await DeviceInfo.DeviceUniqueId(),
-                    "fcmToken": this.state.fcmToken,
-                    "businessType": "",
-                    "type": this.state.logInType
-                }
-                this.setState({ pageLoader: true })
-                let responseData = await MiddlewareCheck("customerLogin", reqData);
-                console.log("login-----------", JSON.stringify(responseData))
-                if (responseData == false) {
-                    this.setState({ alertMessage: "Network Error!" });
-                } else {
-                    if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                        await StorageDataModification.authData(responseData.response[0].token, "store");
-                        let modifyLoginData = modCustomerLoginData(responseData, type);
-                        this.props.mappedCountriesUserData(modifyLoginData.mappedCountires);
-                        this.props.mappedProductUserData(modifyLoginData.mappedMaxLevelForProducts);
-                        this.props.mappedHigherLevelProducts(modifyLoginData.mappedHighersLevelProducts);
-                        this.props.stateAllCountries(modifyCountryArrData(modifyLoginData.mappedCountires));
-                        this.props.loginData(modifyLoginData)
-                        await StorageDataModification.userCredential(modifyLoginData, "store");
-                        await StorageDataModification.mappedLocationData(modifyLoginData.mappedCountires, "store");
-                        await StorageDataModification.mappedProductData(modifyLoginData.mappedMaxLevelForProducts, "store");
-                        await StorageDataModification.mappedHigherLevelProductData(modifyLoginData.mappedHighersLevelProducts, "store");
-                        await StorageDataModification.routeData(modifyLoginData.lastLevelLocations, "store"); // to store the location data in async storage
-                        this.props.userSelectedBeatRouteData(modifyLoginData.lastLevelLocations);// to store the location data in redux
-                        this.setState({ isVisibleModal: false })
-                        await this.getFinancialYearData(responseData)
-                        this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'DrawerNav' }] }));
-                    } else {
-                        this.setState({ alertMessage: responseData.message });
-                        this.setState({ isVisibleModal: false })
-                    }
-                }
-            }
-            else {
-                let reqData = {
-                    "email": this.state.userId,
-                    "password": this.state.password,
-                    "platform": Platform.OS,
-                    "deviceId": await DeviceInfo.DeviceUniqueId(),
-                    "fcmToken": this.state.fcmToken,
-                    "businessType": "",
-                    "type": this.state.logInType
-                }
-                this.setState({ pageLoader: true })
-                let responseData = await MiddlewareCheck("loginNew", reqData);
-                console.log("login----employeee-------", JSON.stringify(responseData))
-
-                if (responseData == false) {
-                    this.setState({ alertMessage: "Network Error!" });
-                } else {
-                    if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                        await StorageDataModification.authData(responseData.response[0].token, "store");
-                        await StorageDataModification.userMenuPermision(modifyMenuPermisionData(responseData.response[0].moduleDetails), "store");
-                        let modifyLoginData = modLoginData(responseData, type);
-                        let userSettingsData = await GetUserData.getUserSettingsData(modifyLoginData);
-                        let userModuleSettingsData = await GetUserData.getUserModuleSettingsData(modifyLoginData);
-                        this.props.mappedCountriesUserData(responseData.response[0].mappedCountires);
-                        this.props.mappedProductUserData(responseData.response[0].mappedMaxLevelForProducts);
-                        this.props.mappedHigherLevelProducts(responseData.response[0].mappedHighersLevelProducts);
-                        this.props.stateAllCountries(modifyCountryArrData(responseData.response[0].mappedCountires));
-                        this.props.loginData(modifyLoginData)
-                        await StorageDataModification.userCredential(modifyLoginData, "store");
-                        await StorageDataModification.userSettingsData(userSettingsData, "store");
-                        await StorageDataModification.userModuleSettingsData(userModuleSettingsData, "store");
-                        await StorageDataModification.mappedLocationData(responseData.response[0].mappedCountires, "store");
-                        await StorageDataModification.mappedProductData(responseData.response[0].mappedMaxLevelForProducts, "store");
-                        await StorageDataModification.mappedHigherLevelProductData(responseData.response[0].mappedHighersLevelProducts, "store");
-                        // await this._getHierarchyTypesSlNo(responseData.response[0].mappedCountires, modifyLoginData);
-                        await StorageDataModification.routeData(modifyLoginData.lastLevelLocations, "store"); // to store the location data in async storage
-                        this.props.userSelectedBeatRouteData(modifyLoginData.lastLevelLocations);// to store the location data in redux
-                        this.setState({ isVisibleModal: false })
-                        await this.getFinancialYearData(responseData)
-                        this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'DrawerNav' }] }));
-                    } else {
-                        this.setState({ alertMessage: responseData.message });
-                        this.setState({ isVisibleModal: false })
-                    }
-                }
-            }
-            this.setState({ pageLoader: false })
-        }
-    }
 
     getFinancialYearData = async () => {
         let responseData = await MiddlewareCheck("getCurrentFinYear", {}, this.props);
@@ -599,7 +487,11 @@ class LogIn extends React.Component {
     }
 
 
-    _onLoginSelect = () => {
+    openSelectionModal = (type) => {
+        this.setState({ openModal: type })
+    }
+
+    _onLoginSelect = async () => {
         let errorCount = 0;
         let msg = "";
         let data = {
@@ -620,7 +512,58 @@ class LogIn extends React.Component {
         }
         this.setState({ alertMessage: msg })
         if (errorCount == 0) {
-            this.setState({ isVisibleModal: true })
+            let reqData = {
+                "email": this.state.userId,
+                "password": this.state.password,
+                "platform": Platform.OS,
+                "deviceId": await DeviceInfo.DeviceUniqueId(),
+                "fcmToken": this.state.fcmToken,
+                "businessType": "",
+                "type": this.state.logInType,
+                "moduleId": CommonData.ModuleType.LMS_APP
+            }
+            this.setState({ pageLoader: true })
+            let responseData = await MiddlewareCheck("loginNew", reqData);
+            if (responseData == false) {
+                this.setState({ alertMessage: "Network Error!" });
+            } else {
+                if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                    let modifyLoginData = modLoginData(responseData);
+                    this.setState({ loginArr: modifyLoginData })
+
+                    if (responseData.response.length > 1) {
+                        this.openSelectionModal(true);
+
+                    } else {
+                        await StorageDataModification.authData(responseData.response[0].token, "store");
+                        await StorageDataModification.userMenuPermision(modifyMenuPermisionData(responseData.response[0].moduleDetails), "store");
+                        let userSettingsData = await GetUserData.getUserSettingsData(modifyLoginData[0]);
+                        let userModuleSettingsData = await GetUserData.getUserModuleSettingsData(modifyLoginData[0]);
+                        this.props.mappedCountriesUserData(responseData.response[0].mappedCountires);
+                        this.props.mappedProductUserData(responseData.response[0].mappedMaxLevelForProducts);
+                        this.props.mappedHigherLevelProducts(responseData.response[0].mappedHighersLevelProducts);
+                        this.props.stateAllCountries(modifyCountryArrData(responseData.response[0].mappedCountires));
+                        this.props.loginData(modifyLoginData[0])
+                        await StorageDataModification.userCredential(modifyLoginData[0], "store");
+                        await StorageDataModification.userSettingsData(userSettingsData, "store");
+                        await StorageDataModification.userModuleSettingsData(userModuleSettingsData, "store");
+                        await StorageDataModification.mappedLocationData(responseData.response[0].mappedCountires, "store");
+                        await StorageDataModification.mappedProductData(responseData.response[0].mappedMaxLevelForProducts, "store");
+                        await StorageDataModification.mappedHigherLevelProductData(responseData.response[0].mappedHighersLevelProducts, "store");
+                        // await this._getHierarchyTypesSlNo(responseData.response[0].mappedCountires, modifyLoginData);
+                        await StorageDataModification.routeData(modifyLoginData[0].lastLevelLocations, "store"); // to store the location data in async storage
+                        this.props.userSelectedBeatRouteData(modifyLoginData[0].lastLevelLocations);// to store the location data in redux
+                        await this.getFinancialYearData(responseData)
+                        this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'DrawerNav' }] }));
+
+                    }
+
+                } else {
+                    this.setState({ alertMessage: responseData.message });
+                }
+
+            }
+            this.setState({ pageLoader: false })
         }
     }
 
@@ -638,10 +581,6 @@ class LogIn extends React.Component {
             //__select login type function
             const onSelectLoginType = (value) => {
                 // this.setState({ loginType: value })
-            }
-
-            const _onBackToPhoneNo = () => {
-
             }
 
             return (
@@ -831,9 +770,9 @@ class LogIn extends React.Component {
                     <Text style={styles.contactHeadingSubTxt}>Please contact to our support if you face any issue</Text>
                 </View>
                 <View style={styles.contactTypeSec} >
-                    <TouchableOpacity onPress={() => onContactSelect(7890831532, "phone")} activeOpacity={0.8} style={{ flexDirection: "row", flex: 1 }}>
+                    <TouchableOpacity onPress={() => onContactSelect(7003194949, "phone")} activeOpacity={0.8} style={{ flexDirection: "row", flex: 1 }}>
                         <Image source={ImageName.LOGIN_PHONE_ICON} style={styles.contactIcon} />
-                        <Text style={styles.contactPhoneDataTxt}>+91 7890831532</Text>
+                        <Text style={styles.contactPhoneDataTxt}>+91 7003194949</Text>
                     </TouchableOpacity>
                     <View style={{ width: 10 }} />
                     <TouchableOpacity onPress={() => onContactSelect("support.cliky.com", "mail")} activeOpacity={0.8} style={{ flexDirection: "row", flex: 1 }}>
@@ -845,53 +784,72 @@ class LogIn extends React.Component {
         )
     }
 
+
+    _onUpdate = async () => {
+        if (this.state.selectedCustomerObj.id == undefined || this.state.selectedCustomerObj.id == null || this.state.selectedCustomerObj.id == 0) {
+            Toaster.ShortCenterToaster("Please select the Brand !")
+        }
+        else {
+            await StorageDataModification.authData(this.state.selectedCustomerObj.token, "store");
+            await StorageDataModification.userMenuPermision(modifyMenuPermisionData(this.state.selectedCustomerObj.moduleDetails), "store");
+            let userSettingsData = await GetUserData.getUserSettingsData(this.state.selectedCustomerObj);
+            let userModuleSettingsData = await GetUserData.getUserModuleSettingsData(this.state.selectedCustomerObj);
+            this.props.mappedCountriesUserData(this.state.selectedCustomerObj.mappedCountires);
+            this.props.mappedProductUserData(this.state.selectedCustomerObj.mappedMaxLevelForProducts);
+            this.props.mappedHigherLevelProducts(this.state.selectedCustomerObj.mappedHighersLevelProducts);
+            this.props.stateAllCountries(modifyCountryArrData(this.state.selectedCustomerObj.mappedCountires));
+            this.props.loginData(this.state.selectedCustomerObj)
+            await StorageDataModification.userCredential(this.state.selectedCustomerObj, "store");
+            await StorageDataModification.userSettingsData(userSettingsData, "store");
+            await StorageDataModification.userModuleSettingsData(userModuleSettingsData, "store");
+            await StorageDataModification.mappedLocationData(this.state.selectedCustomerObj.mappedCountires, "store");
+            await StorageDataModification.mappedProductData(this.state.selectedCustomerObj.mappedMaxLevelForProducts, "store");
+            await StorageDataModification.mappedHigherLevelProductData(this.state.selectedCustomerObj.mappedHighersLevelProducts, "store");
+            // await this._getHierarchyTypesSlNo(responseData.response[0].mappedCountires, modifyLoginData);
+            await StorageDataModification.routeData(this.state.selectedCustomerObj.lastLevelLocations, "store"); // to store the location data in async storage
+            this.props.userSelectedBeatRouteData(this.state.selectedCustomerObj.lastLevelLocations);// to store the location data in redux
+
+            await this.getFinancialYearData()
+            this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'DrawerNav' }] }));
+
+            this.openSelectionModal(false);
+        }
+    }
+
     modalSec = () => {
-
-        const closeModal = () => {
-            this.setState({ isVisibleModal: false })
+        const _OnSelectCustomer = (value, index) => {
+            this.setState({ selectedCustomerObj: value })
         }
-
-        const onSelectCustomer = async (type) => {
-            await StorageDataModification.loginUserTypeData(type, "store");
-            this.props.loginUserTypeData(type)
-            this._onLogin(type)
-        }
-
-        const onSelectEmployee = async (type) => {
-            await StorageDataModification.loginUserTypeData(type, "store");
-            this._onLogin(type)
-        }
-
         return (
-            <BottomModal
-                isVisible={this.state.isVisibleModal}
-                // onRequestClose={() => closeModal()}
-                onBackdropPress={() => closeModal()}
-                // onBackButtonPress={() => closeModal()}
+            <Modal
+                onBackdropPress={() => this.openSelectionModal(false)}
+                isVisible={this.state.openModal}
                 children={
                     <View style={styles.modalview}>
-                        {this.state.pageLoader ?
-                            <View style={{ paddingTop: 30, paddingBottom: 50, }}>
-                                <Loader type={"normal"} />
+                        <View style={styles.modalHeaderSec}>
+                            <View style={styles.marginView}>
+                                <Text style={styles.profileNameText}>Select Brand</Text>
                             </View>
-                            :
-                            <>
-                                <View style={{ paddingTop: 30, paddingBottom: 10, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={styles.loginTypeTxtHead}>Login As</Text>
-                                </View>
-                                <View style={{ flexDirection: "row", paddingBottom: 50, paddingHorizontal: 20, justifyContent: "center", alignItems: "center" }}>
-                                    <TouchableOpacity onPress={() => onSelectCustomer("customer")} style={styles.loginBtnCustomer}>
-                                        <Text style={styles.loginTypeTxt}>Customer</Text>
-                                    </TouchableOpacity>
-                                    <View style={{ width: 50 }} />
-                                    <TouchableOpacity onPress={() => onSelectEmployee("employee")} style={styles.loginBtnEmployee}>
-                                        <Text style={styles.loginTypeTxt}>Employee</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-
-                        }
-
+                        </View>
+                        <View style={{ marginHorizontal: "10%", justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+                            <DropdownInputBox
+                                selectedValue={this.state.selectedCustomerObj.id ? this.state.selectedCustomerObj.id.toString() : "0"}
+                                data={this.state.loginArr}
+                                onSelect={(value) => _OnSelectCustomer(value)}
+                                headerText={"Select Brand*"}
+                                selectedText={this.state.selectedCustomerObj.name ? this.state.selectedCustomerObj.name : "Unit"}
+                                selectedTextColor={this.state.selectedCustomerObj.name ? Color.COLOR.GRAY.SONIC_SILVER : Color.COLOR.GRAY.SILVER}
+                                isBackButtonPressRequired={true}
+                                isBackdropPressRequired={true}
+                            />
+                        </View>
+                        <View style={{ marginHorizontal: '10%', marginTop: 15 }}>
+                            <TouchableOpacity style={styles.updateButton}
+                                activeOpacity={0.9}
+                                onPress={() => this._onUpdate()}>
+                                <Text style={styles.updateText}>Proceed</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 }
             />
@@ -934,7 +892,7 @@ class LogIn extends React.Component {
                         <Image source={ImageName.LOGIN_FOOTER_IMG} style={styles.footerImg} />
                     </View>
                 </ScrollView>
-                {this.modalSec()}
+                {this.state.openModal ? this.modalSec() : null}
             </SafeAreaView>
         )
     }

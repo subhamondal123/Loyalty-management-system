@@ -39,6 +39,13 @@ export function modArrData(arr) {
             else {
                 modObj["comments"] = arr[i].comments
             }
+            if (arr[i].requestedRoleName == undefined || arr[i].requestedRoleName == null) {
+                modObj["requestedRoleName"] = ""
+            }
+            else {
+                modObj["requestedRoleName"] = arr[i].requestedRoleName
+            }
+            
             modObj["labelColor"] = arr[i].stateName == "Requested" ? "#E3BE5D" : arr[i].stateName == "CRM" ? "#54C0A0" : arr[i].stateName == "Purchase" ? "#C372CA" : "#57C95A"
             modObj["backgroundColor"] = arr[i].stateName == "Requested" ? "#FFF4BB" : arr[i].stateName == "CRM" ? "#BBFFEB" : arr[i].stateName == "Purchase" ? "#FBC9FF" : "#9FF7A2"
 

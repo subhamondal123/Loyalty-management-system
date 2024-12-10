@@ -13,6 +13,7 @@ import { MiddlewareOnlyApiCheck } from '../../services/middleware';
 import { ErrorCode } from '../../services/constant';
 import { CommonActions } from '@react-navigation/native';
 import { Toaster } from '../../services/common-view-function';
+import { compareVersions } from './Function';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -34,11 +35,11 @@ class Dashboard extends Component {
     _onGetAppVersionInfo = async () => {
         let reqData = { "packageName": AppInfo.getAppPackageName(), "appIndex": APP_INDEX }
         let responseData = await MiddlewareOnlyApiCheck("getCurrentAppVersionInfo", reqData);
-        console.log("getCurrentAppVersionInfo---", JSON.stringify(responseData))
         if (responseData) {
             if (responseData.error === ErrorCode.ERROR.ERROR.WITHOUT_ERROR && responseData.respondcode === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.setState({ versionData: responseData.data })
-                if (responseData.data.version !== AppInfo.getCurrentAppVersion()) {
+                let compareVersion = compareVersions(responseData.data.version,AppInfo.getCurrentAppVersion())
+                if (compareVersion == 1) {
                     if (responseData.data.isUpdate == 2) {
                         this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'NewVersionAvailable',"data":responseData.data }] }));
                     } else {

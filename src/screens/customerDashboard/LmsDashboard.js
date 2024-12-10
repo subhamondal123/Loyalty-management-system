@@ -20,8 +20,9 @@ const tabData = [
     },
     {
         id: 2,
-        name: "Update Stock",
-        check: false
+        name: "Add New \n Lifting",
+        check: false,
+        image: ImageName.ADD_NEW_LIFTING
     },
     // {
     //     id: 3,
@@ -50,26 +51,45 @@ const activityData = [
         check: false,
         image: ImageName.CUSTOMER_REGISTRATION
     },
-    // {
-    //     id: 4,
-    //     name: "Request \n Reeemption",
-    //     check: false,
-    //     image: ImageName.REQUEST_REDEEM
-    // },
-]
-
-const influencerActivityData = [
-    {
-        id: 1,
-        name: "Passbook",
-        check: false,
-        image: ImageName.PASSBOOK
-    },
     {
         id: 4,
         name: "Request \n Reeemption",
         check: false,
         image: ImageName.REQUEST_REDEEM
+    },
+    {
+        id: 5,
+        name: "Catalogue",
+        check: false,
+        image: ImageName.CALENDAR_VISIT
+    },
+    {
+        id: 6,
+        name: "Passbook & Redemption",
+        check: false,
+        image: ImageName.COINS
+    },
+]
+
+const influencerActivityData = [
+
+    {
+        id: 4,
+        name: "Request \n Reeemption",
+        check: false,
+        image: ImageName.REQUEST_REDEEM
+    },
+    {
+        id: 5,
+        name: "Catalogue",
+        check: false,
+        image: ImageName.CALENDAR_VISIT
+    },
+    {
+        id: 6,
+        name: "Passbook & Redemption",
+        check: false,
+        image: ImageName.COINS
     },
 ]
 
@@ -104,30 +124,32 @@ export default class LmsDashboard extends Component {
     }
     load = async () => {
         this.setState({ refreshing: false, })
+        StoreUserOtherInformations("", {}, this.props);
+        await this.setInitialState()
         await this.setTabData();
         await this.getChartData()
         // await this.setTabLoader(false)
         // await this.setPointLoader(false)
         await this.setChartLoader(false)
-        StoreUserOtherInformations("", {}, this.props);
-        await this.setInitialState()
         await this.fetchRecentSecondarySalesList();
         await this.fetchMonthWisePoint();
     }
 
     setTabData = async () => {
         let userInfo = await StorageDataModification.userCredential({}, "get");
-        if (userInfo.mstSlNo != "4") {
-            this.setState({ activityOptionData: activityData })
-        } else {
-            this.setState({ activityOptionData: influencerActivityData })
-        }
+        // if (userInfo.mstSlNo != "4") {
+        this.setState({ activityOptionData: activityData })
+        // } 
+        // else {
+        //     this.setState({ activityOptionData: influencerActivityData })
+        // }
     }
 
     fetchMonthWisePoint = async () => {
         let userInfo = await StorageDataModification.userCredential({}, "get");
         let reqData = {
-            "refUserId": userInfo.userId,
+            "refCustomerId": userInfo.customerId.toString(),
+            "refUserId": userInfo.customerId.toString(),
         }
         let responseData = await MiddlewareCheck("getMonthWisePoint", reqData, this.props);
         if (responseData) {
@@ -193,7 +215,8 @@ export default class LmsDashboard extends Component {
 
     fetchRecentSecondarySalesList = async () => {
         let reqData = {
-            refUserId:this.state.userInfo.customerId,
+            "refCustomerId": this.state.userInfo.customerId.toString(),
+            refUserId: this.state.userInfo.customerId.toString(),
             mstSlNo: this.state.userInfo.mstSlNo.toString(),
             limit: "5",
             isCustomer: "1",
@@ -229,13 +252,20 @@ export default class LmsDashboard extends Component {
     }
 
     getChartData = async () => {
-        let responseData = await MiddlewareCheck("dashboardChart", {}, this.props)
+        let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
+            refUserId: this.state.userInfo.customerId.toString(),
+        }
+        let responseData = await MiddlewareCheck("dashboardChart", reqData, this.props)
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.setState({ chartData: responseData.response })
+                await StorageDataModification.activePointData(responseData.response.achieved, "store")
             }
         }
     }
+
+    //new   
 
     onSelectTab = async (item) => {
         let userInfo = await StorageDataModification.userCredential({}, "get");
@@ -252,13 +282,46 @@ export default class LmsDashboard extends Component {
             this.props.navigation.navigate("CustomerListTab", { data: "ConfirmNewLifting" })
             // this.props.navigation.navigate("ConfirmNewLifting", { propData: data, contactTypeData: { id: userInfo.contactTypeId, } })
 
-        } else if (item.id == 3) {
+        } else if (item.id == 3 && userInfo.mstSlNo != "4") {
             this.props.navigation.navigate("NewCustomerRegistration")
         }
-        else {
-            this.props.navigation.navigate("RequestRedemtionCategory", { data: "RequestRedemtionCategory" })
+        else if (item.id == 4) {
+            this.props.navigation.navigate("RequestRedemtionCategory", { data: "RequestRedemtionCategory", dataFrom: "RequestRedemtionCategory" })
+        } else if (item.id == 5) {
+            this.props.navigation.navigate("Catalogue", { data: "catalogue", dataFrom: "catalogue" })
+        } else if (item.id == 6) {
+            this.props.navigation.navigate("PassbookAndRedemption", { data: "PassbookAndRedemption", dataFrom: "PassbookAndRedemption" })
         }
     }
+
+
+    // old 
+    // onSelectTab = async (item) => {
+    //     let userInfo = await StorageDataModification.userCredential({}, "get");
+    //     if (item.id == 1) {
+    //         this.props.navigation.navigate("PassbookListTab")
+    //     } else if (item.id == 2 && userInfo.mstSlNo != "4") {
+    //         let data = {
+    //             "profilePic": userInfo.profileImgUrl,
+    //             "custBusinessName": userInfo.custBusinessName,
+    //             "customerName": userInfo.firstName + " " + userInfo.lastName,
+    //             "contactTypeName": userInfo.contactTypeName
+    //         }
+
+    //         this.props.navigation.navigate("CustomerListTab", { data: "ConfirmNewLifting" })
+    //         // this.props.navigation.navigate("ConfirmNewLifting", { propData: data, contactTypeData: { id: userInfo.contactTypeId, } })
+
+    //     } else if (item.id == 3) {
+    //         this.props.navigation.navigate("NewCustomerRegistration")
+    //     }
+    //     else if (item.id == 4) {
+    //         this.props.navigation.navigate("RequestRedemtionCategory", { data: "RequestRedemtionCategory", dataFrom: "RequestRedemtionCategory" })
+    //     } else if (item.id == 5) {
+    //         this.props.navigation.navigate("Catalogue", { data: "catalogue", dataFrom: "catalogue" })
+    //     } else if (item.id == 6) {
+    //         this.props.navigation.navigate("PassbookAndRedemption", { data: "PassbookAndRedemption", dataFrom: "PassbookAndRedemption" })
+    //     }
+    // }
 
     // for users activity section
     onUserActivitySelectionSection = () => {

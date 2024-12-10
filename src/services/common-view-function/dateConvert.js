@@ -548,6 +548,46 @@ export function getDDthMonthNameYYYYformat(originalDate) {
 }
 
 
+//format 12th January 2023
+export function getDDthMonthNameYYYYformatWithShortMonth(originalDate) {
+    let dateObject = new Date(originalDate);
+    let modObj = {};
+
+    // Formatting the date to "17th August 2011"
+    let day = dateObject.getUTCDate();
+    // Array of month names
+    const monthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "June",
+        "July", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    // Getting the month name
+    let month = monthNames[dateObject.getUTCMonth()];
+
+    // let month = dateObject.toLocaleString('en-US', { month: 'long' });
+    let year = dateObject.getUTCFullYear();
+
+    // Function to add ordinal suffix (e.g., 'st', 'nd', 'rd', 'th')
+    function getOrdinalSuffix(day) {
+        if (day >= 11 && day <= 13) {
+            return "th";
+        }
+        switch (day % 10) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
+        }
+    }
+    let ordinalDay = day + getOrdinalSuffix(day);
+    modObj = { "day": `${ordinalDay}`, "month": `${month}`, "year": `${year}` };
+    return modObj
+}
+
 // get day monthe year with name (17th Apr 24)
 export function getDayMonthYearName(originalDate) {
     let dateObject = new Date(originalDate);

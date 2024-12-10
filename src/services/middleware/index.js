@@ -12,7 +12,6 @@ export function MiddlewareCheck(uriName, payload, props) {
         try {
             if (await userWarning.actionUnauthorizedDeviceWarning(props)) {
                 if (await DeviceInfo.CheckConnection()) {
-                    // const encodeData = Encoder.encode(payload);
                     payload = {
                         currentDateTime: DateConvert.fullDateFormat(new Date()),
                         platform: Platform.OS,
@@ -32,6 +31,11 @@ export function MiddlewareCheck(uriName, payload, props) {
                         payload.refUserId = payload.userId;
                         payload.refUserTypeId = payload.usertypeId
                     }
+                    if (payload.refCustomerId && payload.refCustomerId.length > 0) {
+                        payload.userId = payload.refCustomerId;
+                    } else {
+                        payload.userId = payload.userId;
+                    }
 
                     // if (uriName !== UsersEnums.MIDDLEWARE.ODOMETER_READING_URI ) {
                     //     payload = {
@@ -50,15 +54,7 @@ export function MiddlewareCheck(uriName, payload, props) {
                         //     await StoreUserCurrentLocation(payload, props); // for store the location
                         // }
                         if (props) {
-                            // if (await GetVersionCheck(props)) {
-                            //     let userStatus = await ApiModule.ApiCall("getUserStatus", payload);
-                            //     if (userStatus.data.status == 1) {
-                            //         await multipleRemove(["auth", "userCredential", "headerData", ......StoreDataToStorage.allStorageVariable]);
-                            //         props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
-                            //     } else {
                             resolved(await ApiModule.ApiCall(uriName, payload));
-                            //     }
-                            // }
                         } else {
                             resolved(await ApiModule.ApiCall(uriName, payload));
                         }
@@ -194,28 +190,27 @@ export async function StoreUserOtherInformations(uriName, payload, props) {
         }
 
 
-        if (userInfo.loginType == "customer") {
-            // await StoreCustomerCurrentLocation(payload, props);
-            let userStatus = await ApiModule.ApiCall("getCustomerStatus", payload, props);
-            console.log("userStatus===",userStatus)
-            if (userStatus.response.status == 1 || userStatus.status == 498) {
-                StorageDataModification.removeAllStorageData();
-                StorageDataModification.removeLoginData();
-                // await multipleRemove(["auth", "userCredential", "headerData", ...StoreDataToStorage.allStorageVariable]);
-                props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
-            }
+        // if (userInfo.loginType == "customer") {
+        //     // await StoreCustomerCurrentLocation(payload, props);
+        //     let userStatus = await ApiModule.ApiCall("getCustomerStatus", payload, props);
+        //     // console.log("userstatuusss-customer--", JSON.stringify(userStatus))
+        //     if (userStatus.response.status == 1 || userStatus.status == 498) {
+        //         StorageDataModification.removeAllStorageData();
+        //         StorageDataModification.removeLoginData();
+        //         // await multipleRemove(["auth", "userCredential", "headerData", ...StoreDataToStorage.allStorageVariable]);
+        //         props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
+        //     }
 
-        } else {
-            // await StoreUserCurrentLocation(payload, props);
-            let userStatus = await ApiModule.ApiCall("getUserStatus", payload, props);
-            console.log("getUserStatus::::-----resss::", JSON.stringify(userStatus));
-            if (userStatus.response.status == 1 || userStatus.status == 498) {
-                StorageDataModification.removeAllStorageData();
-                StorageDataModification.removeLoginData();
-                // await multipleRemove(["auth", "userCredential", "headerData", ...StoreDataToStorage.allStorageVariable]);
-                props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
-            }
+        // } else {
+        // await StoreUserCurrentLocation(payload, props);
+        let userStatus = await ApiModule.ApiCall("getUserStatus", payload, props);
+        if (userStatus.response.status == 1 || userStatus.status == 498) {
+            StorageDataModification.removeAllStorageData();
+            StorageDataModification.removeLoginData();
+            // await multipleRemove(["auth", "userCredential", "headerData", ...StoreDataToStorage.allStorageVariable]);
+            props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
         }
+        // }
 
     } else {
         if (props) {

@@ -69,7 +69,7 @@ class LmsCommonHeader extends React.Component {
         // this._getUserInfoFromApi();
         // let userMainData = await StorageDataModification.userCredential({}, "get");
         // this.setState({ userData: userMainData })
-         StoreUserOtherInformations("", {}, this.props);
+        StoreUserOtherInformations("", {}, this.props);
     }
 
     _onProfile = () => {
@@ -145,25 +145,25 @@ class LmsCommonHeader extends React.Component {
         const _onLogout = async () => {
             this.setState({ logOutLoader: true });
 
-            if (this.props.Sales360Redux.loginData.loginType == "employee") {
-                let responseData = await MiddlewareCheck("logout", {});
-                if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                    await StorageDataModification.removeLoginData();
-                    await StorageDataModification.removeAllStorageData();
-                    this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
-                } else {
-                    Toaster.ShortCenterToaster(responseData.message);
-                }
+            // if (this.props.Sales360Redux.loginData.loginType == "employee") {
+            let responseData = await MiddlewareCheck("logout", {});
+            if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                await StorageDataModification.removeLoginData();
+                await StorageDataModification.removeAllStorageData();
+                this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
             } else {
-                let responseData = await MiddlewareCheck("customerLogout", {});
-                if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                    await StorageDataModification.removeLoginData();
-                    await StorageDataModification.removeAllStorageData();
-                    this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
-                } else {
-                    Toaster.ShortCenterToaster(responseData.message);
-                }
+                Toaster.ShortCenterToaster(responseData.message);
             }
+            // } else {
+            //     let responseData = await MiddlewareCheck("customerLogout", {});
+            //     if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+            //         await StorageDataModification.removeLoginData();
+            //         await StorageDataModification.removeAllStorageData();
+            //         this.props.navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'LogIn' }] }));
+            //     } else {
+            //         Toaster.ShortCenterToaster(responseData.message);
+            //     }
+            // }
 
             this.setState({ logOutLoader: false, logoutModal: false });
         }

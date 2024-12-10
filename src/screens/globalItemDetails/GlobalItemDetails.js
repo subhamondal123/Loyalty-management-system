@@ -184,7 +184,7 @@ class GlobalItemDetails extends Component {
         const onAddAddress = async () => {
             let reqData = {
                 "refUserId": Object.keys(this.state.propData).length == 0 ? null : this.state.propData.id.toString(),
-                "refUserGroup": this.props.Sales360Redux.loginData.loginType == "customer" ? 1 : 2,
+                "refUserGroup": Object.keys(this.state.propData).length == 0 ? this.props.Sales360Redux.loginData.loginType == "customer" ? 1 : 2 : 1,
                 "address": this.state.newAddress,
                 "isDefault": this.state.defaultAddressCheck ? "1" : "0",
             }

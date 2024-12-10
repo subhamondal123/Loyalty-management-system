@@ -16,9 +16,10 @@ export async function getUserData() {
             "userId": userInfo.userId == undefined || userInfo.userId == null ? "" : userInfo.userId.toString(),
             "customerId": userInfo.customerId == undefined || userInfo.customerId == null ? "" : userInfo.customerId.toString(),
             "userType": userInfo.userType == undefined || userInfo.userType == null ? "" : userInfo.userType.toString(),
-            "usertypeId": userInfo.designationId == undefined || userInfo.designationId == null ? "" : userInfo.designationId.toString(),
+            "usertypeId": userInfo.usertypeId == undefined || userInfo.usertypeId == null ? "" : userInfo.usertypeId.toString(),
             "roleId": userInfo.roleId == undefined || userInfo.roleId == null ? "" : userInfo.roleId.toString(),
             "designationId": userInfo.designationId == undefined || userInfo.designationId == null ? "" : userInfo.designationId.toString(),
+            "newUserId": userInfo.userId == undefined || userInfo.userId == null ? "" : userInfo.userId.toString(),
             // "refUserId":"",
             // "refUserTypeId":""
             "userGroup": userInfo.loginType == undefined || userInfo.loginType == null ? "" : userInfo.loginType == "customer" ? 2 : 1,

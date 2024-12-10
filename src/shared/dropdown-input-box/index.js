@@ -49,6 +49,7 @@ function DropdownInputBox({
     leftIcon,
     leftIconColor,
     additionalTextStyle,
+    mandatoryField
 }) {
 
     if (isHidden) return null;  //if isHidden is true then it show nothing
@@ -136,7 +137,7 @@ function DropdownInputBox({
                     :
                     null
                 }
-                <Text style={[inputBoxText, { color: findData == true ? selectedTextColor : unSelectedTextColor, fontSize: fontSize, fontFamily: fontFamily }]} numberOfLines={1}>{headerText}</Text>
+                <Text style={[inputBoxText, { color: findData == true ? selectedTextColor : unSelectedTextColor, fontSize: fontSize, fontFamily: fontFamily }]} numberOfLines={1}> {findData ? null : <Text style={[inputBoxText, { color: findData == true ? "black" : "red", fontSize: fontSize, fontFamily: fontFamily }]} numberOfLines={1}>{mandatoryField ? "* " : null}</Text>}{headerText}</Text>
                 <View style={{ marginRight: 16, alignItems: 'center', justifyContent: 'center' }}>
                     <Image style={[{ height: 15, width: 15, resizeMode: 'contain' }, upDownImgStyle]} source={modalVisible ? upDownImages[0] : upDownImages[1]} />
                 </View>
@@ -198,7 +199,8 @@ DropdownInputBox.defaultProps = {
     isLeftIcon: false,
     leftIcon: "locationWithBGColor",
     leftIconColor: "#F13748",
-    additionalTextStyle: {}
+    additionalTextStyle: {},
+    mandatoryField:false
 };
 
 DropdownInputBox.propTypes = {
@@ -232,6 +234,7 @@ DropdownInputBox.propTypes = {
     leftIcon: PropTypes.string,
     leftIconColor: PropTypes.string,
     additionalTextStyle: PropTypes.instanceOf(Object),
+    mandatoryField:PropTypes.bool,
 };
 
 

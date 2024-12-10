@@ -257,7 +257,7 @@ class InfluencerNewCustomer extends React.Component {
     }
 
     onSelectFile = async (type) => {
-        let uploadData = await FileUpload.uploadDocumentAndImage();
+        let uploadData = await FileUpload.uploadPdfAndImage();
         await this.DocUploadApiCall(uploadData);
     }
 
@@ -282,17 +282,16 @@ class InfluencerNewCustomer extends React.Component {
                 Toaster.ShortCenterToaster("Please add Document Number !")
             } else {
                 let docData = {
-                    docName: this.state.docName,
-                    docType: this.state.docType,
-                    docImg: this.state.docImg,
-                    fileType: this.state.selectedDocumentTypeObj.name,
+                    "docName": this.state.docName,
+                    "docType": this.state.docType,
+                    "docImg": this.state.docImg,
+                    "fileType": this.state.selectedDocumentTypeObj.name,
                     "docTypeId": this.state.selectedDocumentTypeObj.id,
                     "docFileName": this.state.docImg
                 }
                 this.state.documentArr.push(docData)
                 onCloseUploadFileModal()
                 this.scrollToBottom()
-
             }
         }
         return (
@@ -327,10 +326,10 @@ class InfluencerNewCustomer extends React.Component {
                                             {this.state.docImg.length > 0 ?
                                                 <>
                                                     <Image source={this.state.docType == "pdf" ? ImageName.PDF_ICON :
-                                                        this.state.docType == "xlsx" || this.state.docType == "xls" ? ImageName.XLS_ICON :
-                                                            this.state.docType == "docX" ? ImageName.DOC_ICON :
-                                                                { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + this.state.docImg }} style={{ height: 250, width: 150, resizeMode: "contain" }} />
-                                                    <View>
+                                                        // this.state.docType == "xlsx" || this.state.docType == "xls" ? ImageName.XLS_ICON :
+                                                        //     this.state.docType == "docX" ? ImageName.DOC_ICON :
+                                                        { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + this.state.docImg }} style={{ height: 250, width: 150, resizeMode: "contain" }} />
+                                                    <View style={{ marginHorizontal: 20 }}>
                                                         <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{this.state.docName}</Text>
                                                     </View>
                                                 </>
@@ -437,7 +436,6 @@ class InfluencerNewCustomer extends React.Component {
             let responseData = await MiddlewareCheck("addNewRegCustomer", reqData, this.props);
             if (responseData) {
                 if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                    // Toaster.ShortCenterToaster(responseData.message)
                     Toaster.ShortCenterToaster("Added Successfully!It will not appear in contact/list until it's verified.")
                     this.props.navigation.goBack()
                 } else {
@@ -480,38 +478,187 @@ class InfluencerNewCustomer extends React.Component {
                     <Header {...this.props} onRefresh={() => console.log("")} />
                     {/* {this.profileSec()} */}
                     <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"} ref={this.scrollViewRef}>
-                        <View style={{ marginTop: 10, marginHorizontal: 5, marginBottom: 500 }}>
+                        <View style={{ marginTop: 10, marginHorizontal: 5, marginBottom: 100 }}>
                             {/* <TouchableOpacity style={{ backgroundColor: '#ffffff', height: 60, borderTopLeftRadius: 14, borderTopRightRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                             <View style={{}}>
                                 <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontSize: FontSize.MD, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD }}>N E W   C U S T O M E R</Text>
                             </View>
                         </TouchableOpacity> */}
-                            <View style={{ backgroundColor: '#ffffff', height: Dimension.height }}>
-                                <View style={{ marginTop: 20, justifyContent: 'center', alignItems: 'center', }} >
-                                    <React.Fragment>
-                                        {this.state.profileImgLoader ?
-                                            <View style={{ height: 60, width: 60, borderRadius: 100, borderColor: "#000", borderWidth: 0.8, justifyContent: 'center', alignItems: 'center' }}>
-                                                <ActivityIndicator size="small" color={Color.COLOR.BLUE.VIOLET_BLUE} />
-                                            </View> :
-                                            <TouchableOpacity onPress={() => this._onProfilePicModalVisible(true)} activeOpacity={0.9}>
-                                                {this.state.profileImg.length == 0 ?
-                                                    <TouchableOpacity onPress={() => this._onProfilePicModalVisible(true)} style={{ height: 60, width: 60, borderRadius: 100, borderColor: "#000", borderWidth: 0.8, justifyContent: 'center', alignItems: 'center' }}>
-                                                        <SvgComponent svgName={"camera"} strokeColor={Color.COLOR.BLUE.LOTUS_BLUE} height={25} width={25} />
-                                                    </TouchableOpacity>
-                                                    :
-                                                    <Image source={{ uri: App_uri.AWS_S3_IMAGE_VIEW_URI + this.state.profileImg }} style={{ height: 60, width: 60, resizeMode: 'cover', borderRadius: 100 }} />
-                                                }
-                                            </TouchableOpacity>
+                            {/* <View style={{ backgroundColor: '#ffffff', height: Dimension.height }}> */}
+                            <View style={{ marginTop: 20, justifyContent: 'center', alignItems: 'center', }} >
+                                <React.Fragment>
+                                    {this.state.profileImgLoader ?
+                                        <View style={{ height: 60, width: 60, borderRadius: 100, borderColor: "#000", borderWidth: 0.8, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ActivityIndicator size="small" color={Color.COLOR.BLUE.VIOLET_BLUE} />
+                                        </View> :
+                                        <TouchableOpacity onPress={() => this._onProfilePicModalVisible(true)} activeOpacity={0.9}>
+                                            {this.state.profileImg.length == 0 ?
+                                                <TouchableOpacity onPress={() => this._onProfilePicModalVisible(true)} style={{ height: 60, width: 60, borderRadius: 100, borderColor: "#000", borderWidth: 0.8, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <SvgComponent svgName={"camera"} strokeColor={Color.COLOR.BLUE.LOTUS_BLUE} height={25} width={25} />
+                                                </TouchableOpacity>
+                                                :
+                                                <Image source={{ uri: App_uri.AWS_S3_IMAGE_VIEW_URI + this.state.profileImg }} style={{ height: 60, width: 60, resizeMode: 'cover', borderRadius: 100 }} />
+                                            }
+                                        </TouchableOpacity>
+                                    }
+                                </React.Fragment>
+                                <Text style={{ color: "#747C90", fontSize: FontSize.SM, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>Upload Customer Image</Text>
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10 }}>
+                                <DropdownInputBox
+                                    selectedValue={this.state.selectedCustomerObj.id ? this.state.selectedCustomerObj.id.toString() : "0"}
+                                    data={this.state.customerTypeArr}
+                                    onSelect={(value) => this._onChangeCustomerType(value)}
+                                    headerText={"User Type"}
+                                    additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                    isBackButtonPressRequired={true}
+                                    isBackdropPressRequired={true}
+                                    unSelectedTextColor={"#5F5F5F"}
+                                    selectedTextColor={"#1F2B4D"}
+                                    fontFamily={FontFamily.FONTS.INTER.SEMI_BOLD}
+                                    borderRadius={25}
+                                    isSearchable={true}
+                                    mandatoryField={true}
+                                />
+                                {/* <View style={styles.numberViewSec}>
+                                    <Text style={styles.textNumber}>Customer Type</Text>
+                                </View> */}
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5, flexDirection: 'row' }}>
+                                <View style={styles.countryCodeLine}>
+                                    <CountryPicker
+                                        countryCode={
+                                            this.state.countryCode
+                                                ? this.state.countryCode
+                                                : "IN"
                                         }
-                                    </React.Fragment>
-                                    <Text style={{ color: "#747C90", fontSize: FontSize.SM, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>Upload Customer Image</Text>
+                                        withFilter
+                                        withFlag
+                                        // withFlagButton={false}
+                                        withAlphaFilter
+                                        withCallingCodeButton
+                                        withCallingCode
+                                        preferredCountries={["IN", "US", "GB"]}
+                                        onSelect={(country) => this.handleCountryChange(country)}
+                                        visible={false}
+                                        style={styles.countryCode}
+                                    />
                                 </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10 }}>
+                                <View style={{ flex: 0.7 }}>
+                                    <TextInputBox
+                                        value={this.state.phoneNumber}
+                                        onChangeText={(value) => this._onChangePhoneNumber(value)}
+                                        keyboardType={"number-pad"}
+                                        placeholder={"Phone No."}
+                                        placeholderTextColor={"#5F5F5F"}
+                                        height={45}
+                                        borderRadius={25}
+                                        additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                        maxLength={10}
+                                        isRightIcon={true}
+                                        rightIcon={ImageName.PHONE}
+                                        isActivityLoader={this.state.checkPhoneLoader ? true : false}
+                                        rightIconStyle={{ height: 15, width: 15 }}
+                                        mandatoryField={true}
+                                    />
+                                </View>
+                                {/* <View style={styles.numberViewSec}>
+                                    <Text style={styles.textNumber}>2 8 2 8 2 9 7 3 5 3</Text>
+                                </View> */}
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
+                                <TextInputBox
+                                    value={this.state.customerName}
+                                    onChangeText={(value) => this._onChangeCustomerName(value)}
+                                    keyboardType={"default"}
+                                    placeholder={"Customer Name"}
+                                    placeholderTextColor={"#5F5F5F"}
+                                    height={45}
+                                    borderRadius={25}
+                                    additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                    mandatoryField={true}
+                                />
+                                {/* <View style={styles.numberViewSec}>
+                                    <Text style={styles.textNumber}>Customer Name</Text>
+                                </View> */}
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
+                                <TextInputBox
+                                    value={this.state.mailId}
+                                    onChangeText={(value) => this._onChangeMail(value)}
+                                    keyboardType={"default"}
+                                    placeholder={"Mail ID"}
+                                    placeholderTextColor={"#5F5F5F"}
+                                    height={45}
+                                    borderRadius={25}
+                                    additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                />
+                                {/* <View style={styles.numberViewSec}>
+                                    <Text style={styles.textNumber}>Customer Name</Text>
+                                </View> */}
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
+                                <TextInputBox
+                                    value={this.state.businessName}
+                                    onChangeText={(value) => this._onChangeCustomerBusinessName(value)}
+                                    keyboardType={"default"}
+                                    placeholder={"Customer Business Name"}
+                                    placeholderTextColor={"#5F5F5F"}
+                                    height={45}
+                                    borderRadius={25}
+                                    additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                />
+                                {/* <View style={styles.numberViewSec}>
+                                    <Text style={styles.textNumber}>Customer Name</Text>
+                                </View> */}
+                            </View>
+                            {/* {this.state.selectedCustomerObj.id == 104 && this.state.selectedCustomerObj.name == "Dealer" ? */}
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
+                                <TextInputBox
+                                    value={this.state.erpCode}
+                                    onChangeText={(value) => this._onChangeErpCode(value)}
+                                    keyboardType={"default"}
+                                    placeholder={"ERP Code"}
+                                    placeholderTextColor={"#5F5F5F"}
+                                    height={45}
+                                    borderRadius={25}
+                                    additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
+                                />
+                                {/* <View style={styles.numberViewSec}>
+                                <Text style={styles.textNumber}>Customer Name</Text>
+                            </View> */}
+                            </View>
+                            {/* : null
+                            } */}
+                            <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
+                                <Text style={{ color: "#747C90", fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}> <Text style={{ color: "red", fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>*</Text> Location Information</Text>
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10 }}>
+
+                                {this.state.locationLoader ?
+                                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                        <ActivityIndicator color={Color.COLOR.BLACK.PURE_BLACK} />
+                                    </View>
+                                    :
+                                    <LmsLocationMapping
+                                        // type={"lastHierarcyField"}
+                                        viewType={"add"}
+                                        screenName={"registrationFrom"}
+                                        isLabelVisible={false}
+                                        gap={0}
+                                        onApiCallData={(value) => this.onSelectLocationData(value)} />
+                                }
+                            </View>
+                            <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
+                                <Text style={{ color: "#747C90", fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>Other Information</Text>
+                            </View>
+                            <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10, flexDirection: "row", alignItems: "center" }}>
+                                <View style={{ flex: 1, marginRight: 10 }}>
                                     <DropdownInputBox
-                                        selectedValue={this.state.selectedCustomerObj.id ? this.state.selectedCustomerObj.id.toString() : "0"}
-                                        data={this.state.customerTypeArr}
-                                        onSelect={(value) => this._onChangeCustomerType(value)}
-                                        headerText={"User Type"}
+                                        selectedValue={this.state.selectedDocumentTypeObj.id ? this.state.selectedDocumentTypeObj.id.toString() : "0"}
+                                        data={this.state.documentTypeArr}
+                                        onSelect={(value) => this._onChangeDocumentType(value)}
+                                        headerText={"Document Type"}
                                         additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
                                         isBackButtonPressRequired={true}
                                         isBackdropPressRequired={true}
@@ -521,184 +668,52 @@ class InfluencerNewCustomer extends React.Component {
                                         borderRadius={25}
                                         isSearchable={true}
                                     />
-                                    {/* <View style={styles.numberViewSec}>
+                                </View>
+
+                                {/* <View style={styles.numberViewSec}>
                                     <Text style={styles.textNumber}>Customer Type</Text>
                                 </View> */}
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5, flexDirection: 'row' }}>
-                                    <View style={styles.countryCodeLine}>
-                                        <CountryPicker
-                                            countryCode={
-                                                this.state.countryCode
-                                                    ? this.state.countryCode
-                                                    : "IN"
-                                            }
-                                            withFilter
-                                            withFlag
-                                            // withFlagButton={false}
-                                            withAlphaFilter
-                                            withCallingCodeButton
-                                            withCallingCode
-                                            preferredCountries={["IN", "US", "GB"]}
-                                            onSelect={(country) => this.handleCountryChange(country)}
-                                            visible={false}
-                                            style={styles.countryCode}
-                                        />
-                                    </View>
-                                    <View style={{ flex: 0.7 }}>
-                                        <TextInputBox
-                                            value={this.state.phoneNumber}
-                                            onChangeText={(value) => this._onChangePhoneNumber(value)}
-                                            keyboardType={"number-pad"}
-                                            placeholder={"Phone No."}
-                                            placeholderTextColor={"#5F5F5F"}
-                                            height={45}
-                                            borderRadius={25}
-                                            additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                            maxLength={10}
-                                            isRightIcon={true}
-                                            rightIcon={ImageName.PHONE}
-                                            isActivityLoader={this.state.checkPhoneLoader ? true : false}
-                                            rightIconStyle={{ height: 15, width: 15 }}
-                                        />
-                                    </View>
-                                    {/* <View style={styles.numberViewSec}>
-                                    <Text style={styles.textNumber}>2 8 2 8 2 9 7 3 5 3</Text>
-                                </View> */}
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
-                                    <TextInputBox
-                                        value={this.state.customerName}
-                                        onChangeText={(value) => this._onChangeCustomerName(value)}
-                                        keyboardType={"default"}
-                                        placeholder={"Customer Name"}
-                                        placeholderTextColor={"#5F5F5F"}
-                                        height={45}
-                                        borderRadius={25}
-                                        additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                    />
-                                    {/* <View style={styles.numberViewSec}>
-                                    <Text style={styles.textNumber}>Customer Name</Text>
-                                </View> */}
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
-                                    <TextInputBox
-                                        value={this.state.mailId}
-                                        onChangeText={(value) => this._onChangeMail(value)}
-                                        keyboardType={"default"}
-                                        placeholder={"Mail ID"}
-                                        placeholderTextColor={"#5F5F5F"}
-                                        height={45}
-                                        borderRadius={25}
-                                        additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                    />
-                                    {/* <View style={styles.numberViewSec}>
-                                    <Text style={styles.textNumber}>Customer Name</Text>
-                                </View> */}
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
-                                    <TextInputBox
-                                        value={this.state.businessName}
-                                        onChangeText={(value) => this._onChangeCustomerBusinessName(value)}
-                                        keyboardType={"default"}
-                                        placeholder={"Customer Business Name"}
-                                        placeholderTextColor={"#5F5F5F"}
-                                        height={45}
-                                        borderRadius={25}
-                                        additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                    />
-                                    {/* <View style={styles.numberViewSec}>
-                                    <Text style={styles.textNumber}>Customer Name</Text>
-                                </View> */}
-                                </View>
-                                {/* {this.state.selectedCustomerObj.id == 104 && this.state.selectedCustomerObj.name == "Dealer" ? */}
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 5 }}>
-                                    <TextInputBox
-                                        value={this.state.erpCode}
-                                        onChangeText={(value) => this._onChangeErpCode(value)}
-                                        keyboardType={"default"}
-                                        placeholder={"ERP Code"}
-                                        placeholderTextColor={"#5F5F5F"}
-                                        height={45}
-                                        borderRadius={25}
-                                        additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                    />
-                                    {/* <View style={styles.numberViewSec}>
-                                <Text style={styles.textNumber}>Customer Name</Text>
-                            </View> */}
-                                </View>
-                                {/* : null
-                            } */}
-                                <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
-                                    <Text style={{ color: "#747C90", fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>Location Information</Text>
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10 }}>
-
-                                    {this.state.locationLoader ?
-                                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                                            <ActivityIndicator color={Color.COLOR.BLACK.PURE_BLACK} />
-                                        </View>
-                                        :
-                                        <LmsLocationMapping
-                                            // type={"lastHierarcyField"}
-                                            viewType={"add"}
-                                            screenName={"registrationFrom"}
-                                            isLabelVisible={false}
-                                            gap={0}
-                                            onApiCallData={(value) => this.onSelectLocationData(value)} />
-                                    }
-                                </View>
-                                <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
-                                    <Text style={{ color: "#747C90", fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.ITALIC, marginTop: 10, }}>Other Information</Text>
-                                </View>
-                                <View style={{ marginHorizontal: 15, marginVertical: 8, marginTop: 10, flexDirection: "row", alignItems: "center" }}>
-                                    <View style={{ flex: 1, marginRight: 10 }}>
-                                        <DropdownInputBox
-                                            selectedValue={this.state.selectedDocumentTypeObj.id ? this.state.selectedDocumentTypeObj.id.toString() : "0"}
-                                            data={this.state.documentTypeArr}
-                                            onSelect={(value) => this._onChangeDocumentType(value)}
-                                            headerText={"Document Type"}
-                                            additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0.5, backgroundColor: "#fff" }}
-                                            isBackButtonPressRequired={true}
-                                            isBackdropPressRequired={true}
-                                            unSelectedTextColor={"#5F5F5F"}
-                                            selectedTextColor={"#1F2B4D"}
-                                            fontFamily={FontFamily.FONTS.INTER.SEMI_BOLD}
-                                            borderRadius={25}
-                                            isSearchable={true}
-                                        />
-                                    </View>
-
-                                    {/* <View style={styles.numberViewSec}>
-                                    <Text style={styles.textNumber}>Customer Type</Text>
-                                </View> */}
-                                    <TouchableOpacity onPress={() => this.onAttachPress()} style={{ backgroundColor: Color.COLOR.BLUE.LOTUS_BLUE, borderRadius: 25, paddingHorizontal: 15, paddingVertical: 12, flexDirection: "row", alignItems: "center" }}>
-                                        <Image source={ImageName.UPLOAD_LOGO} style={{ height: 18, width: 18, resizeMode: "contain" }} />
-                                        <Text style={{ fontSize: 14, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, color: Color.COLOR.WHITE.PURE_WHITE, marginLeft: 10 }}>Attach</Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                                <View style={{ marginHorizontal: 15, flexDirection: "row", flexWrap: "wrap" }}>
-                                    {this.state.documentArr.map((item, key) => (
-                                        <View key={key}>
-
-                                            <View style={{ marginHorizontal: 5, width: Dimension.width / 3 - 25 }}>
-                                                <Image source={item.docType == "pdf" ? ImageName.PDF_ICON :
-                                                    item.docType == "xlsx" || item.docType == "xls" ? ImageName.XLS_ICON :
-                                                        item.docType == "docX" ? ImageName.DOC_ICON : { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + item.docImg }} style={{ height: 160, width: 100, resizeMode: "contain" }} />
-                                                <Text style={{ fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, color: Color.COLOR.BLUE.LOTUS_BLUE, textAlign: "center" }}>{item.fileType}</Text>
-                                            </View>
-                                            <TouchableOpacity onPress={() => this.onRemoveDoc(key)} style={{ position: "absolute", right: 0, backgroundColor: Color.COLOR.GRAY.LIGHT_GRAY_COLOR, height: 25, width: 25, borderRadius: 20, padding: 10, alignItems: "center", justifyContent: "center" }}>
-                                                <Image source={ImageName.CROSS_IMG} style={{ height: 12, width: 12, resizeMode: "contain" }} />
-                                            </TouchableOpacity>
-                                        </View>
-                                    ))}
-                                </View>
+                                <TouchableOpacity onPress={() => this.onAttachPress()} style={{ backgroundColor: Color.COLOR.BLUE.LOTUS_BLUE, borderRadius: 25, paddingHorizontal: 15, paddingVertical: 12, flexDirection: "row", alignItems: "center" }}>
+                                    <Image source={ImageName.UPLOAD_LOGO} style={{ height: 18, width: 18, resizeMode: "contain" }} />
+                                    <Text style={{ fontSize: 14, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, color: Color.COLOR.WHITE.PURE_WHITE, marginLeft: 10 }}>Attach</Text>
+                                </TouchableOpacity>
 
                             </View>
+                            <View style={{ marginHorizontal: 15, flexDirection: "row", flexWrap: "wrap" }}>
+                                {this.state.documentArr.map((item, key) => (
+                                    <View key={key}>
+
+                                        <View style={{ marginHorizontal: 5, width: Dimension.width / 3 - 25 }}>
+                                            <Image source={item.docType == "pdf" ? ImageName.PDF_ICON :
+                                                item.docType == "xlsx" || item.docType == "xls" ? ImageName.XLS_ICON :
+                                                    item.docType == "docX" ? ImageName.DOC_ICON : { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + item.docImg }} style={{ height: 160, width: 100, resizeMode: "contain" }} />
+                                            <Text style={{ fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, color: Color.COLOR.BLUE.LOTUS_BLUE, textAlign: "center" }}>{item.fileType}</Text>
+                                        </View>
+                                        <TouchableOpacity onPress={() => this.onRemoveDoc(key)} style={{ position: "absolute", right: 0, backgroundColor: Color.COLOR.GRAY.LIGHT_GRAY_COLOR, height: 25, width: 25, borderRadius: 20, padding: 10, alignItems: "center", justifyContent: "center" }}>
+                                            <Image source={ImageName.CROSS_IMG} style={{ height: 12, width: 12, resizeMode: "contain" }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                            <View style={{ width: Dimension.width, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
+                                {this.state.submitLoader ?
+                                    <ActivityIndicator size={"small"} />
+                                    :
+                                    <>
+                                        {this.state.isPhoneExists ?
+                                            null :
+                                            <TouchableOpacity onPress={() => this._onSubmit()} activeOpacity={0.9} style={{ backgroundColor: Color.COLOR.RED.AMARANTH, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 10, marginLeft: 10 }}>
+                                                <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontSize: 14, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>Add New Customer</Text>
+                                            </TouchableOpacity>
+                                        }
+                                    </>
+                                }
+
+                            </View>
+                            {/* </View> */}
                         </View>
                     </ScrollView>
-                    <View style={{ position: "absolute", bottom: 10, width: Dimension.width, justifyContent: "center", alignItems: "center" }}>
+                    {/* <View style={{ position: "absolute", bottom: 80, width: Dimension.width, justifyContent: "center", alignItems: "center" }}>
                         {this.state.submitLoader ?
                             <ActivityIndicator size={"small"} />
                             :
@@ -712,7 +727,7 @@ class InfluencerNewCustomer extends React.Component {
                             </>
                         }
 
-                    </View>
+                    </View> */}
                     {this.modalSec()}
                     {/* <View style={{ marginBottom: 100 }} /> */}
                 </KeyboardAvoidingView>

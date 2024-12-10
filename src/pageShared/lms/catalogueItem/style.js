@@ -1,25 +1,15 @@
 import { StyleSheet } from "react-native";
-import { FontFamily } from "../../../enums";
+import { Color, FontFamily } from "../../../enums";
 
 const styles = StyleSheet.create({
     mainTab: {
-        // width:85,
-        // borderRadius:10,
-        // backgroundColor:"#F0F4F7",
-        // justifyContent:"center",
-        // alignItems:"center",
-        // paddingBottom:15,
-        // paddingTop:15,
-        // paddingRight:10,
-        // paddingLeft:10,
-        // marginLeft:5,
-        // marginRight:5
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
         shadowRadius: 2,
         elevation: 2,
-        borderRadius:15
+        borderRadius:15,
+        backgroundColor:Color.COLOR.GRAY.GRAY_TINTS
     },
 
     heading: {

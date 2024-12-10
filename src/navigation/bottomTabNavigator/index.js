@@ -285,7 +285,7 @@ class CatalogueTab extends React.Component {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                     name="SchemePage"
                     component={SchemePage}
                     // listeners={({ navigation }) => ({
@@ -342,7 +342,7 @@ class CatalogueTab extends React.Component {
                             </Text>
                         ),
                     }}
-                />
+                /> */}
             </Tab.Navigator>
         );
     }
@@ -396,7 +396,7 @@ class CatalogueDetailsTab extends React.Component {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                     name="SchemePage"
                     component={SchemePage}
                     // listeners={({ navigation }) => ({
@@ -453,7 +453,7 @@ class CatalogueDetailsTab extends React.Component {
                             </Text>
                         ),
                     }}
-                />
+                /> */}
             </Tab.Navigator>
         );
     }
@@ -729,7 +729,7 @@ class PassbookTab extends React.Component {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                     name="SchemePage"
                     component={SchemePage}
                     // listeners={({ navigation }) => ({
@@ -786,7 +786,7 @@ class PassbookTab extends React.Component {
                             </Text>
                         ),
                     }}
-                />
+                /> */}
             </Tab.Navigator>
         );
     }
@@ -947,7 +947,7 @@ class RedemptionDetailsTab extends React.Component {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                     name="SchemePage"
                     component={SchemePage}
                     // listeners={({ navigation }) => ({
@@ -1004,7 +1004,7 @@ class RedemptionDetailsTab extends React.Component {
                             </Text>
                         ),
                     }}
-                />
+                /> */}
             </Tab.Navigator>
         );
     }
@@ -1393,15 +1393,9 @@ class RequestRedemtionCategoryTab extends React.Component {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                     name="SchemePage"
                     component={SchemePage}
-                    // listeners={({ navigation }) => ({
-                    //     tabPress: e => {
-                    //         e.preventDefault();
-                    //         navigation.dispatch(DrawerActions.toggleDrawer());
-                    //     }
-                    // })}
                     options={{
                         headerShown: false,
                         tabBarIcon: ({ focused }) => (
@@ -1450,7 +1444,7 @@ class RequestRedemtionCategoryTab extends React.Component {
                             </Text>
                         ),
                     }}
-                />
+                /> */}
             </Tab.Navigator>
         );
     }

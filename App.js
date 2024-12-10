@@ -24,6 +24,8 @@ import {
   PasswordUpdateSuccess,
   ChangePassword,
   NewVersionAvailable,
+  OrderCartDetails,
+  RequestForPasswordSuccess,
 } from './src/screens';
 
 import { DrawerNav } from './src/navigation';
@@ -49,16 +51,16 @@ class App extends React.Component {
   }
   componentDidMount = () => {
     //get the lat long on 30 min of interval
-    setInterval(async () => {
-      let loc = await GetUserData.getUserLocation();
-      let reqData = {
-        lattitude: loc.lattitude,
-        longitude: loc.longitude,
-        currentTimeStamp: DateConvert.fullDateFormat(new Date()),
-        address: ""
-      }
-      await MiddlewareCheck("getCurrentLocation", reqData, this.props);
-    }, 1800000);
+    // setInterval(async () => {
+    //   let loc = await GetUserData.getUserLocation();
+    //   let reqData = {
+    //     lattitude: loc.lattitude,
+    //     longitude: loc.longitude,
+    //     currentTimeStamp: DateConvert.fullDateFormat(new Date()),
+    //     address: ""
+    //   }
+    //   await MiddlewareCheck("getCurrentLocation", reqData, this.props);
+    // }, 1800000);
   }
   render() {
     return (
@@ -119,10 +121,12 @@ class App extends React.Component {
             <Stack.Screen name="OtpVerifyChangePassword" component={OtpVerifyChangePassword} options={{ headerShown: false }} />
             <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} options={{ headerShown: false }} />
             <Stack.Screen name="PasswordUpdateSuccess" component={PasswordUpdateSuccess} options={{ headerShown: false }} />
+            <Stack.Screen name="RequestForPasswordSuccess" component={RequestForPasswordSuccess} options={{ headerShown: false }} />
             <Stack.Screen name='NewVersionAvailable' component={NewVersionAvailable} options={{ headerShown: false }} />
 
 
             <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+            <Stack.Screen name="OrderCartDetails" component={OrderCartDetails} options={{ headerShown: false }} />
 
           </Stack.Navigator>
         </NavigationContainer>

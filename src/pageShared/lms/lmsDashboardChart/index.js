@@ -164,9 +164,10 @@ class Index extends Component {
                             offsetX={45}
                             style={{
                                 grid: { stroke: 'none' }, // to hide the grid
-                                // axis: { stroke: "transparent" }, // to make the axis invisible
+                                axis: { stroke: "transparent" }, // to make the axis invisible
                                 ticks: { stroke: "transparent" }, // to hide the line of this particular axis
-                                tickLabels: { fill: "#738490", fontSize: 12, fontWeight: 600 },
+                                // tickLabels: { fill: "#738490", fontSize: 12, fontWeight: 600 },
+                                tickLabels:{fill:"none"}
                             }}
                         />
                         < VictoryBar

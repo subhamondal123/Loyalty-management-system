@@ -71,7 +71,6 @@ class LmsHeaderWithFilter extends React.Component {
 
     onApplyFilterData = (data) => {
         this.props.onApplyFilter(data)
-        // this.routefilterModal()
     }
 
     onResetData = () => {
@@ -103,7 +102,7 @@ class LmsHeaderWithFilter extends React.Component {
                         <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, fontSize: FontSize.SM }}>{this.props.headerText}</Text>
                     </View>
 
-                    <TouchableOpacity style={{ marginRight: 20 }} onPress={() => this.filterModal()}>
+                    <TouchableOpacity style={{ marginRight: 10 }} onPress={() => this.filterModal()}>
                         <SvgComponent svgName={"lmsFilter"} strokeColor={"#1F2B4D"} />
                     </TouchableOpacity>
                     {isVisibleIcon.isVisibleBellIcon ?

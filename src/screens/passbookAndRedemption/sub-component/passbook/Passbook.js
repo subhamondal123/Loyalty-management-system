@@ -4,12 +4,12 @@ import styles from './Style'
 import { PassbookTab, PassbookTransactionDetailModal } from '../../../../pageShared'
 import { Color, Dimension, FontFamily, FontSize, ImageName } from '../../../../enums'
 import SvgComponent from '../../../../assets/svg'
-import { BigTextButton, Loader, NoDataFound, TextInputBox } from '../../../../shared'
+import { BigTextButton, DropdownInputBox, Loader, NoDataFound, TextInputBox } from '../../../../shared'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { MiddlewareCheck } from '../../../../services/middleware'
-import { modifyListData } from './Function'
+import { formatYearRange, modifyFinancialYearDropdownData, modifyListData } from './Function'
 import { ErrorCode } from '../../../../services/constant'
-import { DateConvert } from '../../../../services/common-view-function'
+import { DateConvert, StorageDataModification } from '../../../../services/common-view-function'
 
 
 export default class Passbook extends Component {
@@ -30,7 +30,10 @@ export default class Passbook extends Component {
             selectedItem: {},
             scrollY: new Animated.Value(0),
             headerHeight: new Animated.Value(50),
-
+            userData: {},
+            propData: this.props.route.params.propData ? this.props.route.params.propData : {},
+            selectedFinancialYearObj: {},
+            financialYearArr: [],
         }
     }
 
@@ -40,8 +43,11 @@ export default class Passbook extends Component {
     }
 
     // this is the first function where set the state data
-    _load = () => {
-        this._apiCallRes();
+    _load = async () => {
+        let userInfo = await StorageDataModification.userCredential({}, "get");
+        this.setState({ userData: userInfo })
+        await this.setFinancialYear()
+        await this._apiCallRes();
     }
 
     _apiCallRes = async () => {
@@ -49,8 +55,41 @@ export default class Passbook extends Component {
         let reqData = {
             "limit": this.state.limit.toString(),
             "offset": (this.state.pageNum * this.state.limit).toString(),
+            "refUserId": Object.keys(this.state.propData).length > 0 ? this.state.propData.id : this.state.userData.customerId.toString(),
+            "forFinancialYearId": this.state.selectedFinancialYearObj.id,
+
         }
         await this.getPassbookList(reqData);
+    }
+
+    setFinancialYear = async () => {
+        let responseData = await MiddlewareCheck("getFinYear", {}, this.props)
+        if (responseData) {
+            if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                this.state.selectedFinancialYearObj = await this.modSelectedFinYear(responseData.response)
+                this.setState({
+                    financialYearArr: modifyFinancialYearDropdownData(responseData.response),
+                    selectedFinancialYearObj: this.state.selectedFinancialYearObj
+                })
+            }
+        }
+
+    }
+
+    modSelectedFinYear = async (data) => {
+        let finYearData = await StorageDataModification.currentFinancialYearData({}, "get")
+        let respObj = {}
+        if (data) {
+            if (data.length > 0) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].financialyearId == finYearData.financialyearId) {
+                        respObj["id"] = data[i].financialyearId
+                        respObj["name"] = formatYearRange(data[i].financialYearStartDate, data[i].financialYearEndDate)
+                    }
+                }
+            }
+        }
+        return respObj
     }
 
     onRefresh = async () => {
@@ -112,25 +151,28 @@ export default class Passbook extends Component {
             <View style={styles.activeBoxshadowColor} key={key}>
                 <TouchableOpacity style={{ padding: 14 }} activeOpacity={0.9} onPress={() => this.showHide(item, key)}>
                     <View style={{ marginHorizontal: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ backgroundColor: '#efefef', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDDthMonthNameYYYYformat(item.createdAt).day}</Text>
-                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDayName(item.createdAt)}</Text>
-                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDDthMonthNameYYYYformat(item.createdAt).month}</Text>
-                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDDthMonthNameYYYYformat(item.createdAt).year}</Text>
-
-
+                        <View style={{ backgroundColor: '#efefef', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 10, justifyContent: 'center', alignItems: 'center', width: 90 }}>
+                            {/* <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDDthMonthNameYYYYformat(item.createdAt).day}</Text> */}
+                            {/* <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{DateConvert.getDayName(item.createdAt)}</Text> */}
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.BOLD }}>Lifted</Text>
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.BOLD }}>for</Text>
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 10, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.salesDate.length > 0 ? DateConvert.getDDthMonthNameYYYYformat(item.salesDate).month : "N/A"}</Text>
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.salesDate.length > 0 ? DateConvert.getDDthMonthNameYYYYformat(item.salesDate).year : "N/A"}</Text>
                         </View>
                         <View style={{ flex: 1, marginLeft: '5%' }}>
                             {/* <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.SM, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD }}>Reference</Text> */}
                             <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.SM, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.pointCategoryName}</Text>
-                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.invoice}</Text>
+
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.type == 2 ? item.item : "Lifted From : " + item.liftFrom}</Text>
+                            <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>{item.type == 2 ? "Redeemed on : " + DateConvert.formatDDMMYYYY(item.createdAt) : "Lifting marked on : " + DateConvert.formatDDMMYYYY(item.createdAt)}</Text>
+
                         </View>
                         {item.type == 1 || item.type == 3 ?
                             <SvgComponent svgName={"greenDownArrow"} strokeColor={"#61C234"} height={14} width={14} />
                             :
                             <SvgComponent svgName={"redUpArrow"} strokeColor={"#F13748"} height={14} width={14} />
                         }
-                        {item.type == 1 ?
+                        {item.isLockPointConverted == 0 ?
                             <SvgComponent svgName={"blueLock"} strokeColor={"#000"} height={18} width={18} />
                             :
                             <SvgComponent svgName={"unlock"} strokeColor={"#000"} height={18} width={18} />
@@ -284,6 +326,38 @@ export default class Passbook extends Component {
         )
     }
 
+    financialYearSec = () => {
+        const onChangeFinancialYear = async (val) => {
+            this.setState({ selectedFinancialYearObj: val })
+            await this.setInitialStateData()
+            await this._apiCallRes()
+        }
+        return (
+            <>
+                <View style={{ flexDirection: "row" }}>
+                    <View style={{ flex: 0.7 }} />
+
+                    <View style={{ flex: 0.3 }}>
+                        <DropdownInputBox
+                            selectedValue={this.state.selectedFinancialYearObj.id ? this.state.selectedFinancialYearObj.id.toString() : "0"}
+                            data={this.state.financialYearArr}
+                            onSelect={(value) => onChangeFinancialYear(value)}
+                            headerText={""}
+                            additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0, backgroundColor: "#fff", paddingVertical: 0, elevation: 0 }}
+                            isBackButtonPressRequired={true}
+                            isBackdropPressRequired={true}
+                            unSelectedTextColor={"#1F2B4D"}
+                            selectedTextColor={"#1F2B4D"}
+                            fontFamily={FontFamily.FONTS.INTER.SEMI_BOLD}
+                            fontSize={11}
+                            borderRadius={25}
+                        />
+                    </View>
+                </View>
+            </>
+        )
+    }
+
     modalSec = () => {
         return (
             <>
@@ -292,11 +366,23 @@ export default class Passbook extends Component {
         )
     }
 
+    filterSec = () => {
+        return (
+            <>
+            </>
+        )
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 {this.modalSec()}
-                {this.searchSec()}
+                <View>
+                    {this.financialYearSec()}
+                    {this.filterSec()}
+                </View>
+
+                {/* {this.searchSec()} */}
                 {/* {this.headingSec()} */}
                 {this.state.pageLoader ?
                     <View>

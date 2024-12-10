@@ -35,18 +35,18 @@ export function validateData(data) {
     //     Toaster.ShortCenterToaster("Please Enter ERP Code !")
     //     errCounter++
     // }
-    else if (data.custBusinessName.length == 0) {
-        Toaster.ShortCenterToaster("Please Enter Customer Business Name!")
-        errCounter++
-    }
+    // else if (data.custBusinessName.length == 0) {
+    //     Toaster.ShortCenterToaster("Please Enter Customer Business Name!")
+    //     errCounter++
+    // }
     else if (data.locationObj == undefined || data.locationObj == null || data.locationObj.length == 0) {
         Toaster.ShortCenterToaster("Please Selet Location !")
         errCounter++
     }
-    else if (data.custDocArray == undefined || data.custDocArray == null || data.custDocArray.length == 0) {
-        Toaster.ShortCenterToaster("Please Selet Document Type !")
-        errCounter++
-    }
+    // else if (data.custDocArray == undefined || data.custDocArray == null || data.custDocArray.length == 0) {
+    //     Toaster.ShortCenterToaster("Please Selet Document Type !")
+    //     errCounter++
+    // }
 
 
 

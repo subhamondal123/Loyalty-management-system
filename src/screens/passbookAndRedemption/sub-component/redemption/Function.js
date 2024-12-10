@@ -46,7 +46,7 @@ export function modifyListData(data) {
                 if (listData[i].imagePath == undefined || listData[i].imagePath == null) {
                     modObj["imagePath"] = "";
                 } else {
-                    modObj["imagePath"] = App_uri.LMS_IMAGE_VIEW_URI + listData[i].imagePath;
+                    modObj["imagePath"] = App_uri.LMS_AWS_S3_IMAGE_VIEW_URI + "/" + listData[i].imagePath;
                 }
                 if (listData[i].isLockPointConverted == undefined || listData[i].isLockPointConverted == null) {
                     modObj["isLockPointConverted"] = "";
@@ -63,6 +63,19 @@ export function modifyListData(data) {
                 } else {
                     modObj["approvedStatus"] = listData[i].approvedStatus;
                 }
+                if (listData[i].stateName == undefined || listData[i].stateName == null) {
+                    modObj["stateName"] = "";
+                } else {
+                    modObj["stateName"] = listData[i].stateName;
+                }
+
+                if (listData[i].colorCode == undefined || listData[i].colorCode == null) {
+                    modObj["colorCode"] = "";
+                } else {
+                    modObj["colorCode"] = listData[i].colorCode;
+                }
+
+
 
 
                 modObj["check"] = false;
@@ -71,4 +84,34 @@ export function modifyListData(data) {
         }
     }
     return (respData);
+}
+
+
+export function modifyFinancialYearDropdownData(data) {
+    let respArr = [];
+    if (data && data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+            let modObj = {};
+            if (data[i].financialyearId == undefined || data[i].financialyearId == null) {
+                modObj["id"] = ""
+            } else {
+                modObj["id"] = data[i].financialyearId
+            }
+            if (data[i].financialYearStartDate == undefined || data[i].financialYearStartDate == null) {
+                modObj["name"] = ""
+            } else {
+                modObj["name"] = formatYearRange(data[i].financialYearStartDate, data[i].financialYearEndDate)
+            }
+            respArr.push(modObj)
+        }
+    }
+    return respArr
+}
+
+export function formatYearRange(startDate, endDate) {
+    const startYear = new Date(startDate).getFullYear();
+    const endYear = new Date(endDate).getFullYear();
+
+    // Format to desired format "YYYY-YY"
+    return `${startYear}-${endYear.toString().slice(-2)}`;
 }

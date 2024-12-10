@@ -92,7 +92,9 @@ const SELECTED_CUSTOMER_DATA = "Fzu$9lTkU7#@DgbY)";
 const MAPPED_PRODUCT_DATA = "K$e&&l%0uikOkd_Sa%c";
 const MAPPED_HIGHER_LEVEL_PRODUCT_DATA = "l)e&&d^0uikLkd_SL%Q";
 const LOGIN_USER_TYPE_DATA = "S$9#@lD)%8l!eVS-h&*";
-const FINANCIAL_YEAR_DATA = "PH3x6c0boreVnu2A"
+const FINANCIAL_YEAR_DATA = "PH3x6c0boreVnu2A";
+const CATALOGUE_AND_CATEGORY_DATA = "Qzu)9lTkn7#!DgbY)";
+const ACTIVE_POINT_DATA = "Ozu$9ljk!0#@DgbY-"
 
 
 
@@ -166,7 +168,9 @@ export const allStorageVariable = [
     MAPPED_HIGHER_LEVEL_PRODUCT_DATA,
     LMS_EMPLOYEE_ACTIVITY_SELECTION_TAB,
     LOGIN_USER_TYPE_DATA,
-    FINANCIAL_YEAR_DATA
+    FINANCIAL_YEAR_DATA,
+    CATALOGUE_AND_CATEGORY_DATA,
+    ACTIVE_POINT_DATA
 ]
 
 // for remove the data which is stored in login
@@ -195,7 +199,9 @@ export async function removeLoginData() {
         MAPPED_PRODUCT_DATA,
         MAPPED_HIGHER_LEVEL_PRODUCT_DATA,
         LMS_EMPLOYEE_ACTIVITY_SELECTION_TAB,
-        FINANCIAL_YEAR_DATA
+        FINANCIAL_YEAR_DATA,
+        CATALOGUE_AND_CATEGORY_DATA,
+        ACTIVE_POINT_DATA
     ]);
 }
 
@@ -1502,4 +1508,39 @@ export async function currentFinancialYearData(data, type) {
     }
 }
 
+export async function catalogueAndCategoryData(data, type) {
+    switch (type) {
+        case "store":
+            if (data) {
+                await storeData(CATALOGUE_AND_CATEGORY_DATA, data);
+            }
+            return true;
+        case "get":
+            return await getData(CATALOGUE_AND_CATEGORY_DATA);
+
+        case "clear":
+            return await singleRemove(CATALOGUE_AND_CATEGORY_DATA);
+
+        default:
+            return true;
+    }
+}
+
+export async function activePointData(data, type) {
+    switch (type) {
+        case "store":
+            if (data) {
+                await storeData(ACTIVE_POINT_DATA, data);
+            }
+            return true;
+        case "get":
+            return await getData(ACTIVE_POINT_DATA);
+
+        case "clear":
+            return await singleRemove(ACTIVE_POINT_DATA);
+
+        default:
+            return true;
+    }
+}
 

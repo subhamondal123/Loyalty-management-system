@@ -8,7 +8,7 @@ import { Color, FontFamily, FontSize, ImageName } from '../../../enums';
 import DatePicker from 'react-native-date-picker';
 import { DateConvert } from '../../../services/common-view-function';
 import { Image } from 'react-native';
-import { RecentLiftingFilter } from './sub-component';
+import { CatalogueFilter, RecentLiftingFilter } from './sub-component';
 
 function LmsFilterModal({
     isHidden,
@@ -677,6 +677,8 @@ function LmsFilterModal({
                             </View>
                             {props.route.name == "AllRecentLiftingListCustomer" || props.route.name == "AllRecentLiftingList" ?
                                 <RecentLiftingFilter {...props} onFilter={(data) => onApplyFilter(data)} onResetFilterModal={() => onResetModal()} />
+                                : props.route.name == "Catalogue" || props.route.name == "RequestRedemtionCategory"? 
+                                <CatalogueFilter {...props} onFilter={(data) => onApplyFilter(data)} onResetFilterModal={() => onResetModal()} />
                                 :
                                 <>
 

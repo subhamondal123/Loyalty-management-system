@@ -59,10 +59,11 @@ export { default as OtpVerifyChangePassword } from './otpVerifyChangePassword/Ot
 export { default as CreateNewPassword } from './createNewPassword/CreateNewPassword';
 export { default as PasswordUpdateSuccess } from './passwordUpdateSuccess/PasswordUpdateSuccess';
 export { default as ChangePassword } from './changePassword/ChangePassword';
+export { default as RequestForPasswordSuccess } from './requestForPasswordSuccess/RequestForPasswordSuccess';
+
 
 export { default as NewVersionAvailable } from './newVersionAvailable/NewVersionAvailable';
-
-
+export { default as OrderCartDetails } from './orderCartDetails/OrderCartDetails';
 
 
 export { default as NetworkError } from './network-error';

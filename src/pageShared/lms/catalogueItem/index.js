@@ -1,12 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "./style";
 import { PropTypes } from 'prop-types';
-import { Animated, View } from 'react-native';
+import { ActivityIndicator, Animated, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Text } from 'react-native';
 import { Image } from 'react-native';
 import { Dimension, ImageName } from '../../../enums';
 import SvgComponent from '../../../assets/svg';
+import FastImage from 'react-native-fast-image';
+import { ImagePreview } from '../../../shared';
+import { MiddlewareCheck } from '../../../services/middleware';
+import { ErrorCode } from '../../../services/constant';
+
+
+import { Buffer } from 'buffer'
+import { App_uri } from '../../../services/config';
 
 function CatalogueItem({
     props,
@@ -24,84 +32,73 @@ function CatalogueItem({
 
     if (isHidden) return null;
 
+    const [src, setSrc] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let img = "";
+            let req = {
+                fileName: data.imagePath
+            }
+            setLoading(true)
+            let fileDownload = await MiddlewareCheck("geLMSFileDownloadPreview", req, this.props);
+
+            if (fileDownload.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                try {
+                    const base = Buffer.from(fileDownload.response.Body.data, 'binary').toString('base64')
+                    img = 'data:image/jpg;base64,' + base
+                    setSrc(img)
+                } catch (error) {
+
+                }
+            }
+            setLoading(false)
+        }
+        fetchData()
+    }, [])
+
     const onClickTab = (data) => {
-        onPress(data)
+        let mainData = Object.assign(data, { src: src })
+        onPress(mainData)
     }
-
-    // const height = Dimension.height
-
-    // if (scrollY == undefined || scrollY == null) {
-
-    // } else {
-        // const inputRange = [
-        //     -1,
-        //     0,
-        //     (height * 0.1 + 5) * index,
-        //     (height * 0.1 + 5) * (index + 9),
-        // ];
-        // const scale = 1;
-        // const opacity = scrollY.interpolate({
-        //     inputRange,
-        //     outputRange: [1, 1, 1, 0],
-        // });
-        // const Offset = scrollY.interpolate({
-        //     inputRange,
-        //     outputRange: [0, 0, 0, 500],
-        // });
-
-    // }
 
 
 
     return (
         <>
             {/* {scrollY == undefined || scrollY == null ? */}
-                <TouchableOpacity style={[styles.mainTab, { ...additionStyles, width: width }]} activeOpacity={0.9} onPress={() => onClickTab(data)}>
-                    <Image source={{ uri: data.image }} style={{ height: 100, width: width, resizeMode: "contain", borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }} />
-                    <View style={{ borderBottomLeftRadius: borderRadius, borderBottomRightRadius: borderRadius, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: "#efebeb", top: -3 }}>
-                        <Text style={styles.heading}>{data.label}</Text>
-                        <View style={{ borderWidth: 0.5, borderColor: "#5F5F5F", backgroundColor: "#5F5F5F" }} />
-                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}>
-                            <Text style={styles.bottomheading}>Use</Text>
-                            <SvgComponent svgName={"nineDot"} strokeColor={"#273441"} height={8} width={8} />
-                            <View style={{ flex: 1 }} />
-                            <View >
-                                <Text style={styles.amount}>{data.amount}</Text>
+            <TouchableOpacity style={[styles.mainTab, { ...additionStyles, width: width }]} activeOpacity={0.9} onPress={() => onClickTab(data)}>
+                {/* {loading ? <View style={{ height: 100, justifyContent: "center", alignItems: "center" }}>
+                    <Image source={ImageName.NO_IMAGE} style={[{ height: 100, width: width, resizeMode: "contain", borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }]} />
 
-                            </View>
+                </View> :
+                     <FastImage
+                     style={{ width: width, height: 100, borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }}
+                     source={src.length > 0 ? { uri: src } : ImageName.NO_IMAGE}
+                     resizeMode={FastImage.resizeMode.contain}
+                 >
+                 </FastImage>
+                } */}
+                <Image source={data.imagePath.length > 0 ? { uri: App_uri.LMS_AWS_S3_IMAGE_VIEW_URI + "/" + data.imagePath } : ImageName.NO_IMAGE} style={[{ height: 100, width: width, resizeMode: "contain", borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }]} />
+
+                {/* <ImagePreview width={width} height={100} fileName={data.imagePath} additionalStyles={{ borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }} /> */}
+                <View style={{ borderBottomLeftRadius: borderRadius, borderBottomRightRadius: borderRadius, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: "#efebeb", top: -3 }}>
+                    <Text style={styles.heading} numberOfLines={1}>{data.label}</Text>
+                    <View style={{ borderWidth: 0.5, borderColor: "#5F5F5F", backgroundColor: "#5F5F5F" }} />
+                    <View style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}>
+                        <Text style={styles.bottomheading}>Use</Text>
+                        <SvgComponent svgName={"nineDot"} strokeColor={"#273441"} height={8} width={8} />
+                        <View style={{ flex: 1 }} />
+                        <View >
+                            <Text style={styles.amount}>{data.amount}</Text>
                         </View>
                     </View>
+                </View>
 
-                </TouchableOpacity>
-                {/* :
-                <Animated.View
-                    style={{
-                        transform: [{ scale: scale }, { translateX: Offset }],
-                        opacity: opacity,
-                    }}
-                >
-                    <TouchableOpacity style={[styles.mainTab, { ...additionStyles, width: width }]} activeOpacity={0.9} onPress={() => onClickTab(data)}>
-                        <Image source={{ uri: data.image }} style={{ height: 100, width: width, resizeMode: "contain", borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }} />
-                        <View style={{ borderBottomLeftRadius: borderRadius, borderBottomRightRadius: borderRadius, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: "#efebeb", top: -3 }}>
-                            <Text style={styles.heading}>{data.label}</Text>
-                            <View style={{ borderWidth: 0.5, borderColor: "#5F5F5F", backgroundColor: "#5F5F5F" }} />
-                            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}>
-                                <Text style={styles.bottomheading}>Use</Text>
-                                <SvgComponent svgName={"nineDot"} strokeColor={"#273441"} height={8} width={8} />
-                                <View style={{ flex: 1 }} />
-                                <View >
-                                    <Text style={styles.amount}>{data.amount}</Text>
-
-                                </View>
-                            </View>
-                        </View>
-
-                    </TouchableOpacity>
-
-                </Animated.View>
-            } */}
-
-
+            </TouchableOpacity>
         </>
     )
 }

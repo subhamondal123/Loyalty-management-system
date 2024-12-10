@@ -24,7 +24,7 @@ class ConfirmLiftingList extends Component {
 
         this.state = {
             scrollY: new Animated.Value(0),
-            limit: 10,
+            limit: 6,
             pageNum: 0,
             searchText: "",
             customerList: [],
@@ -44,7 +44,8 @@ class ConfirmLiftingList extends Component {
                 "contactTypeId": "",
                 "count": "",
                 "lastDate": ""
-            }
+            },
+            
         }
     }
     componentDidMount = async () => {
@@ -61,7 +62,7 @@ class ConfirmLiftingList extends Component {
         this.state.userInfo.custBusinessName = userInfo.custBusinessName && userInfo.custBusinessName.length > 0 ? userInfo.custBusinessName : userInfo.firstName + " " + userInfo.lastName;
         this.state.userInfo.address = userInfo.address;
         this.state.userInfo.profilePic = userInfo.profileImgUrl == null || userInfo.profileImgUrl == undefined ? "/images/business.jpg" : userInfo.profileImgUrl;
-        this.state.userInfo.contactTypeId = userInfo.contactTypeId;
+        this.state.userInfo.contactTypeId = userInfo.contactTypeId ? userInfo.contactTypeId : "";
         this.state.userInfo.count = userInfo.count ? userInfo.count : "0";
         this.state.userInfo.lastDate = userInfo.lastDate ? userInfo.lastDate : "";
         this.setState({ refreshing: false, loginType: userInfo.loginType, userInfo: this.state.userInfo });
@@ -70,8 +71,8 @@ class ConfirmLiftingList extends Component {
     }
 
     fetchParentCustomer = async (userInfo) => {
-        // console.log("this.propspspspsp----", JSON.stringify(this.props.route.params.propData.id))
         let reqData = {
+            "refCustomerId": this.state.userInfo.id.toString(),
             "childId": this.props.route.params.propData.id,
         }
         let responseData = await MiddlewareCheck("fetchParentCustomer", reqData, this.props);
@@ -88,6 +89,7 @@ class ConfirmLiftingList extends Component {
             }
         } else {
             let dataReq = {
+                "refCustomerId": this.state.userInfo.id.toString(),
                 "limit": this.state.limit.toString(),
                 "offset": (this.state.pageNum * this.state.limit).toString(),
                 "searchText": this.state.searchText,
@@ -107,7 +109,7 @@ class ConfirmLiftingList extends Component {
     setInitialState = async () => {
         this.setState({
             scrollY: new Animated.Value(0),
-            limit: 10,
+            limit: 6,
             pageNum: 0,
             searchText: "",
             customerList: [],
@@ -131,7 +133,6 @@ class ConfirmLiftingList extends Component {
     fetchCustomerListData = async (dataReq) => {
         this.setState({ refreshing: false })
         let responseData = await MiddlewareCheck("fetchLifterDetails", dataReq, this.props);
-        console.log("fetchLifterDetails:::---", JSON.stringify(responseData));
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 let custList = customerModifyData(responseData);
@@ -144,10 +145,15 @@ class ConfirmLiftingList extends Component {
                 Toaster.ShortCenterToaster(responseData.message)
             }
         }
+        this.setState({
+            pageLoader: false,
+            listLoader: false,
+        })
     }
 
     onFetchContactType = async () => {
-        let responseData = await MiddlewareCheck("getCappingContactTypes", { "toContactTypeId": this.props.route.params.contactTypeData ? this.props.route.params.contactTypeData.id : "" }, this.props);
+
+        let responseData = await MiddlewareCheck("getCappingContactTypes", { "toContactTypeId": this.props.route.params.contactTypeData ? this.props.route.params.contactTypeData.id : "", "refCustomerId": this.state.userInfo.id.toString() }, this.props);
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.state.contactTypeArr = modifyContactTypeArr(responseData.response)
@@ -174,7 +180,7 @@ class ConfirmLiftingList extends Component {
             listLoader: true,
             refreshing: true,
             isApiCall: true,
-            limit: 10,
+            limit: 6,
             pageNum: 0,
         })
     }
@@ -202,7 +208,7 @@ class ConfirmLiftingList extends Component {
                 <TouchableOpacity
                     onPress={() => this.onUpdateForm(item)}
                     style={{ backgroundColor: "#EFEFEF", paddingHorizontal: 10, paddingVertical: 10, borderRadius: 10, marginTop: 15, borderWidth: 0.5, borderColor: "#CBCBCB" }}>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <View style={{ flexDirection: "row" }}>
                         <View>
                             <Image source={{ uri: item.profilePic }} style={{ height: 50, width: 50, resizeMode: "contain", borderRadius: 30 }} />
                         </View>
@@ -211,13 +217,20 @@ class ConfirmLiftingList extends Component {
                                 <Text style={{ color: "#1F2B4D", fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, fontSize: FontSize.XS }} numberOfLines={2}>{item.custBusinessName.length > 0 ? item.custBusinessName : item.ownerName}</Text>
                             </View>
                             <View>
-                                <Text style={{ color: "#5F5F5F", fontFamily: FontFamily.FONTS.POPPINS.REGULAR, fontSize: 11 }}>{item.address}</Text>
+                                {item.locationData.map((i, k) => (
+                                    <>
+                                        <Text style={{ color: "#5F5F5F", fontFamily: FontFamily.FONTS.POPPINS.REGULAR, fontSize: 11 }} key={k}>{i.name}</Text>
+                                    </>
+                                ))}
+                                {/* <Text style={{ color: "#5F5F5F", fontFamily: FontFamily.FONTS.POPPINS.REGULAR, fontSize: 11 }}>{item.address}</Text> */}
                             </View>
                             <View>
                                 <Text style={{ color: "#5F5F5F", fontFamily: FontFamily.FONTS.POPPINS.BOLD, fontSize: 11 }}>{item.contactTypeName}</Text>
                             </View>
                         </View>
                         <View style={{ alignItems: "flex-end" }}>
+                            {/* <Text style={{ color: "#5F5F5F", fontFamily: FontFamily.FONTS.POPPINS.BOLD, fontSize: 11 }}>{"QTY in Hand : " + item.quantityInHand.toFixed(2) + " MT"}</Text> */}
+
                             <View style={{ flexDirection: "row" }}>
                                 <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, fontSize: 11 }}>Recent</Text>
                                 <View style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Color.COLOR.RED.AMARANTH, alignItems: "center", justifyContent: "center", marginLeft: 5 }}>
@@ -238,7 +251,6 @@ class ConfirmLiftingList extends Component {
     }
 
     debouncedFetchData = _debounce(async () => {
-        await this._onSetChangeData();
         let dataReq = {
             "limit": this.state.limit.toString(),
             "offset": (this.state.pageNum * this.state.limit).toString(),
@@ -266,6 +278,7 @@ class ConfirmLiftingList extends Component {
         });
         const onSearch = async (val) => {
             this.setState({ searchText: val })
+            await this._onSetChangeData();
             await this.debouncedFetchData()
         }
         // const onPressSearchIcon = async () => {
@@ -446,7 +459,7 @@ class ConfirmLiftingList extends Component {
                                         selectedValue={this.state.selectedContactTypeObj.id ? this.state.selectedContactTypeObj.id.toString() : "0"}
                                         data={this.state.contactTypeArr}
                                         onSelect={(value) => this.onSelectContactType(value)}
-                                        headerText={"Select Option"}
+                                        headerText={"Select Contact Type"}
                                         additionalBoxStyle={{ backgroundColor: Color.COLOR.WHITE.WHITE_SMOKE, borderRadius: 10 }}
                                         isBackButtonPressRequired={true}
                                         isBackdropPressRequired={true}
@@ -488,6 +501,21 @@ class ConfirmLiftingList extends Component {
                 />
             </>
         )
+    }
+
+    onSelectLocation = async(val) => {
+        let dataReq = {
+            "refCustomerId": this.state.userInfo.id.toString(),
+            "limit": this.state.limit.toString(),
+            "offset": (this.state.pageNum * this.state.limit).toString(),
+            "searchText": this.state.searchText,
+            "locationId": this.props.Sales360Redux.routeData.hierarchyDataId,
+            "locationTypeId": this.props.Sales360Redux.routeData.hierarchyTypeId,
+            "forCustomer": userInfo.loginType == "customer" ? "1" : "0",
+            "toContactTypeId": this.props.route.params.contactTypeData ? this.props.route.params.contactTypeData.id : ""
+        }
+        await this.fetchCustomerListData(dataReq);
+
     }
 
     render() {

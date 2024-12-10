@@ -312,6 +312,9 @@ module.exports.LEAD_REFER_ICON                  =               require(IMG_PATH
 // module.exports.RED_BACK_THUMB_ICON              =               require(IMG_PATH + "red_background_thumb_icon.png");
 // module.exports.GAMIFICATION_SURVEY_IMG          =               require(GAMIFICATION_PATH + "survey_img.png");
 
+module.exports.NO_IMAGE                         =               require(IMG_PATH + "no-image-png-2.png");
+
+
 // for Cliky Magic
 
 module.exports.AlERT_ICON                       =               require(CLIKY_MAGIC_PATH + "alert_img.png");

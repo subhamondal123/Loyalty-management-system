@@ -22,11 +22,11 @@ class Header extends React.Component {
     }
 
     componentDidMount = () => {
-        if (this.props.Sales360Redux.loginData.loginType == "employee") {
+        // if (this.props.Sales360Redux.loginData.loginType == "employee") {
             this._getUserInfoFromApi();
-        } else {
-            this._getCustomerInfoFromApi()
-        }
+        // } else {
+        //     this._getCustomerInfoFromApi()
+        // }
     }
 
     // for get the user info
@@ -63,6 +63,7 @@ class Header extends React.Component {
         }
         this.setState({ attendanceLoader: false });
     }
+
 
     getHeaderData = () => {
         let headerRespObj = {
@@ -115,7 +116,7 @@ class Header extends React.Component {
 
             case "Catalogue": {
                 headerRespObj.headerText = "Catalogue"
-                headerRespObj.lmsHeader = true;
+                headerRespObj.lmsHeaderWithFilter = true;
                 break;
             }
             case "InfluencerCatalogue": {
@@ -149,10 +150,6 @@ class Header extends React.Component {
                 break;
             }
 
-
-
-
-
             case "CustomerListTab": {
                 headerRespObj.headerText = "Customer List"
                 headerRespObj.lmsHeader = true;
@@ -170,7 +167,7 @@ class Header extends React.Component {
             }
             case "RequestRedemtionCategory": {
                 headerRespObj.headerText = "Request Redemption"
-                headerRespObj.lmsHeader = true;
+                headerRespObj.lmsHeaderWithFilter = true;
                 break;
             }
             case "ReedemScreen": {
@@ -226,9 +223,6 @@ class Header extends React.Component {
                 headerRespObj.lmsHeaderWithFilter = true;
                 break;
             }
-
-
-
 
             default:
                 headerRespObj.lmsCommonHeader = true;

@@ -1,5 +1,5 @@
-import React, { Component, forwardRef } from 'react'
-import { ActivityIndicator, Animated, FlatList, Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import React, { Component } from 'react'
+import { Animated, FlatList, Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { MiddlewareCheck } from '../../../services/middleware';
 import { modifyData } from './function';
 import { Color, Dimension, FontFamily, FontSize, ImageName } from '../../../enums';
@@ -10,21 +10,10 @@ import { ErrorCode } from '../../../services/constant';
 import { Loader, NoDataFound, TextInputBox } from '../../../shared';
 import { bindActionCreators } from 'redux';
 import SvgComponent from '../../../assets/svg';
-import DynamicCategoryTab from '../dynamicCategoryTab/DynamicCategoryTab';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import LmsLocationMapping from '../lmsLocationMapping';
 import { StorageDataModification } from '../../../services/common-view-function';
 
-
 class AllCustomerList extends Component {
-
-    // Define default props using static defaultProps
-    // static defaultProps = {
-    //     requestData: {},
-    //     onRefreshList: () => { }
-    // };
-
-    //constructor
     constructor(props) {
         super(props)
 
@@ -37,17 +26,15 @@ class AllCustomerList extends Component {
             isApiCall: true,
             customerList: [],
             customerIdArr: [],
-            searchText: ""
+            searchText: "",
         }
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
         this.load()
     }
 
     load = async () => {
-        let lastLevelLocation = await StorageDataModification.routeData({}, "get");
-        console.log("lastLevelLOcation-----::::", JSON.stringify(lastLevelLocation));
         await this._apiCallRes()
     }
 
@@ -75,6 +62,7 @@ class AllCustomerList extends Component {
                 "isDownload": "0",
                 "approvalList": "0",
                 "customerAccessType": "",
+                "view": "lis",
                 "hierarchyDataIdArr": [{ "hierarchyTypeId": this.props.Sales360Redux.routeData.hierarchyTypeId, "hierarchyDataId": this.props.Sales360Redux.routeData.hierarchyDataId }],
             }
             await this.fetchListData(dataReq);
@@ -82,9 +70,7 @@ class AllCustomerList extends Component {
     }
 
     fetchListData = async (dataReq) => {
-        console.log("datareqq-----", dataReq)
         let responseData = await MiddlewareCheck("registrationList", dataReq, this.props);
-        console.log("registrationList:::Res------", JSON.stringify(responseData));
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 let listData = modifyData(responseData);
@@ -143,7 +129,13 @@ class AllCustomerList extends Component {
                     style={{ alignItems: 'center', marginHorizontal: 5, justifyContent: "center", width: Dimension.width / 4 - 30 }}>
                     <Image source={item.profilePic.length == 0 ? ImageName.USER_IMG : { uri: App_uri.AWS_S3_IMAGE_VIEW_URI + item.profilePic }} style={{ height: 65, width: 65, resizeMode: 'cover', borderRadius: 100, borderWidth: 0.3, borderColor: "#D1D1D1" }} />
                     <View style={{}}>
-                        <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginTop: 8, textAlign: "center" }} numberOfLines={2}>{item.custBusinessName ? item.custBusinessName : item.customerName}</Text>
+                        <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginTop: 8, textAlign: "center" }} numberOfLines={2}>{item.organizationName ? item.organizationName : item.custBusinessName ? item.custBusinessName : item.customerName}</Text>
+                        <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 9, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, textAlign: "center" }} numberOfLines={2}>{"(" + item.phone + ")"}</Text>
+                        {item.locationData.map((i, k) => (
+                            <Text key={k} style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 9, fontFamily: FontFamily.FONTS.POPPINS.BOLD, textAlign: "center" }} >{"(" + i.name + ")"}</Text>
+
+                        ))}
+
                     </View>
                 </TouchableOpacity>
             </View>
@@ -214,7 +206,6 @@ class AllCustomerList extends Component {
                     </View>
                 </View>
             </>
-
         )
     }
 
@@ -229,17 +220,14 @@ class AllCustomerList extends Component {
                     <SvgComponent svgName={"downArrow"} strokeColor={"#F13748"} height={11} width={11} />
                 </View>
             </React.Fragment>
-
         )
     }
 
     onSelectLocationData = (val) => {
     }
 
-
     render() {
         return (
-            // <SafeAreaView>
             <View style={{ marginHorizontal: 10, marginTop: 10 }}>
                 {this.state.pageLoader ?
                     <View style={{ height: Dimension.height / 2 }}>
@@ -248,7 +236,6 @@ class AllCustomerList extends Component {
                                 {this.ViewSkeletonPlaceholder()}
                             </ScrollView>
                         </SkeletonPlaceholder>
-                        {/* <ActivityIndicator color={"blue"} /> */}
                     </View>
                     :
                     <React.Fragment>
@@ -285,7 +272,6 @@ class AllCustomerList extends Component {
                     </React.Fragment>
                 }
             </View>
-            //  </SafeAreaView> 
         )
     }
 }

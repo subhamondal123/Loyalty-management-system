@@ -242,48 +242,48 @@ const styles = StyleSheet.create({
         resizeMode: "contain"
     },
     //modall
+ //modal section
+ modalview: {
+    backgroundColor: '#fff',
+    marginRight: '5%',
+    marginLeft: '5%',
+    paddingBottom: 30,
+    borderRadius: 10
 
-    modalview: {
-        backgroundColor: Color.COLOR.WHITE.PURE_WHITE,
-        // paddingBottom: Padding.PADDING.NORMAL_PX_PADDING.NORMAL_PADDING_30PX,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        width: Dimension.width / 1.1,
-        // maxHeight: Dimension.height,
-        alignSelf: 'center',
-        // right: 0,
-        // left: 0,
-        bottom: -15,
-        position: 'absolute',
-        // position: 'absolute',
-    },
-    loginTypeTxt: {
-        color: Color.COLOR.WHITE.PURE_WHITE,
-        fontFamily: FontFamily.FONTS.POPPINS.MEDIUM,
-        fontSize: FontSize.SM,
-    },
-    loginTypeTxtHead:{
-        color: Color.COLOR.BLACK.PURE_BLACK,
-        fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD,
-        fontSize: FontSize.LG,
-    },
-    loginBtnCustomer: {
-        borderWidth: 0.5,
-        borderColor: Color.COLOR.RED.AMARANTH,
-        backgroundColor: Color.COLOR.RED.AMARANTH,
-        borderRadius: 20,
-        paddingHorizontal: 25,
-        paddingVertical: 10
-    },
-    loginBtnEmployee: {
-        borderWidth: 0.5,
-        borderColor: Color.COLOR.BLUE.LOTUS_BLUE,
-        backgroundColor: Color.COLOR.BLUE.LOTUS_BLUE,
-        borderRadius: 20,
-        paddingHorizontal: 25,
-        paddingVertical: 10
-    }
+},
+modalHeaderSec: {
+    backgroundColor: "#3b1f77",
+    paddingTop: 15,
+    paddingBottom: 15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10
 
+},
+marginView: {
+    marginLeft: '5%',
+    flexDirection: 'row'
+},
+profileNameText: {
+    color: Color.COLOR.WHITE.PURE_WHITE,
+    fontSize: FontSize.SM,
+    fontFamily: FontFamily.FONTS.INTER.BOLD,
+    flex: 1
+},
+
+updateButton: {
+    paddingBottom: 8,
+    paddingTop: 8,
+    paddingHorizontal: '5%',
+    backgroundColor: "#3b1f77",
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8
+},
+updateText: {
+    color: Color.COLOR.WHITE.PURE_WHITE,
+    fontSize: FontSize.SM,
+    fontFamily: FontFamily.FONTS.INTER.MEDIUM
+},
 })
 
 export default styles;

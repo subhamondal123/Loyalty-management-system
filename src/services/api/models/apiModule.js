@@ -5,7 +5,6 @@ import { ApiConfigUrl } from "./";
 
 
 export function ApiCall(uriName, payload) {
-    console.log("uriname---", uriName)
     return new Promise(async function (resolved, reject) {
         try {
             if (ApiConfigUrl.APP_LAST_URI[uriName].isAuth == true) {
@@ -22,6 +21,9 @@ export function ApiCall(uriName, payload) {
                     }
                 );
             }
+            console.log("<<<<<======PAYLOAD(" + uriName + ")=============" + ApiConfigUrl.APP_LAST_URI[uriName].path + "====================>>>>>>>" + JSON.stringify(payload) + "\n\n")
+            // console.log("\n")
+
             if (ApiConfigUrl.APP_LAST_URI[uriName].method == "POST") {
                 if (ApiConfigUrl.APP_LAST_URI[uriName].isEncrypt === true) {
                     payload = { payload: CryptoEncoder.CryptoEncode(payload) };
@@ -33,7 +35,12 @@ export function ApiCall(uriName, payload) {
                         if (ApiConfigUrl.APP_LAST_URI[uriName].isEncrypt === true) {
                             response = CryptoDecoder.CryptoDecode(response);
                         }
-                        console.log("respp---", JSON.stringify(response))
+                        console.log("<<<<<======RESPONSE(" + uriName + ")=============" + ApiConfigUrl.APP_LAST_URI[uriName].path + "====================>>>>>>>" + JSON.stringify(response) + "\n\n")
+                        // console.log("\n")
+                        // console.log("\n")
+                        // console.log("\n")
+                        // console.log("\n")
+                        // console.log("\n")
 
                         resolved(response);
                     })
@@ -41,7 +48,7 @@ export function ApiCall(uriName, payload) {
                         // handle error
                         Toaster.ShortCenterToaster("Network error !")
                         reject(error);
-                        // console.log("error:::",error)
+                        console.log("<<<<<======CATCH(" + uriName + ")=============" + ApiConfigUrl.APP_LAST_URI[uriName].path + "====================>>>>>>>")
                     })
             } else if (ApiConfigUrl.APP_LAST_URI[uriName].method == "GET") {
                 axios.get(ApiConfigUrl.APP_LAST_URI[uriName].path)

@@ -36,11 +36,11 @@ const MonthlyCalendar = ({ onSelect, month, year, visible, onClose, onReset, but
         if ((currYear.toString()).length == 4) {
             if (type === "prev") {
                 setCurrYear(prevYear => parseInt(prevYear) - 1);
-                setSelectedMonth(DateConvert.getDDthMonthNameYYYYformat(new Date()).month)
+                setSelectedMonth(DateConvert.getDDthMonthNameYYYYformatWithShortMonth(new Date()).month)
             } else if (type === "next") {
-                if (currYear + 1 <= DateConvert.getDDthMonthNameYYYYformat(new Date()).year) {
+                if (currYear + 1 <= DateConvert.getDDthMonthNameYYYYformatWithShortMonth(new Date()).year) {
                     setCurrYear(prevYear => parseInt(prevYear) + 1);
-                    setSelectedMonth(DateConvert.getDDthMonthNameYYYYformat(new Date()).month)
+                    setSelectedMonth(DateConvert.getDDthMonthNameYYYYformatWithShortMonth(new Date()).month)
                 }
             }
         } else {
@@ -113,9 +113,11 @@ const MonthlyCalendar = ({ onSelect, month, year, visible, onClose, onReset, but
                         </View>
                         <View style={styles.container}>
                             {months.map((monthName, index) => (
-                                <TouchableOpacity key={index} onPress={() => handleMonthSelect(monthName)} style={selectedMonth === monthName ? styles.selectedMonth : styles.month} activeOpacity={0.9}>
-                                    <Text style={styles.monthText}>{monthName}</Text>
-                                </TouchableOpacity>
+                                <>
+                                    <TouchableOpacity key={index} onPress={() => handleMonthSelect(monthName)} style={selectedMonth === monthName ? styles.selectedMonth : styles.month} activeOpacity={0.9}>
+                                        <Text style={styles.monthText}>{monthName}</Text>
+                                    </TouchableOpacity>
+                                </>
                             ))}
                         </View>
                         <View style={{ flexDirection: 'row', marginTop: 20 }}>

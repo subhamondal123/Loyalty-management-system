@@ -54,142 +54,172 @@ export function emailModValidator(email) {
 };
 
 export function modLoginData(data, type) {
-    let modData = data.response[0];
-    if (modData.firstName == undefined || modData.firstName == null) {
-        modData.firstName = "";
-    } else {
-        modData.firstName = modData.firstName;
-    }
-    if (modData.lastName == undefined || modData.lastName == null) {
-        modData.lastName = "";
-    } else {
-        modData.lastName = modData.lastName;
-    }
-    if (modData.email == undefined || modData.email == null) {
-        modData.email = "";
-    } else {
-        modData.email = modData.email;
-    }
-    if (modData.password == undefined || modData.password == null) {
-        modData.password = "";
-    } else {
-        modData.password = modData.password;
-    }
-    if (modData.username == undefined || modData.username == null) {
-        modData.username = "";
-    } else {
-        modData.username = modData.username;
-    }
-    if (modData.userType == undefined || modData.userType == null) {
-        modData.userType = "";
-    } else {
-        modData.userType = modData.userType;
-    }
-    if (modData.profileImgUrl == undefined || modData.profileImgUrl == null) {
-        modData.profileImgUrl = "";
-    } else {
-        modData.profileImgUrl = modData.profileImgUrl;
-    }
-    if (modData.clientId == undefined || modData.clientId == null) {
-        modData.clientId = "";
-    } else {
-        modData.clientId = modData.clientId;
-    }
-    if (modData.userId == undefined || modData.userId == null) {
-        modData.userId = "";
-    } else {
-        modData.userId = modData.userId;
-    }
-    if (modData.createdAt == undefined || modData.createdAt == null) {
-        modData.createdAt = "";
-    } else {
-        modData.createdAt = modData.createdAt;
-    }
-    if (modData.token == undefined || modData.token == null) {
-        modData.token = "";
-    } else {
-        modData.token = modData.token;
-    }
-    if (modData.locationData == undefined || modData.locationData == null) {
-        modData.locationData = [];
-    } else {
-        modData.locationData = modifyLocationData(modData.locationData);
-    }
-    if (modData.clientSettings == undefined || modData.clientSettings == null) {
-        modData.clientSettings = [];
-    } else {
-        modData.clientSettings = modifyClientSettings(modData.clientSettings);
-    }
-    if (modData.moduleDetails == undefined || modData.moduleDetails == null) {
-        modData.moduleDetails = [];
-    } else {
-        modData.moduleDetails = modifyModuleDetails(modData.moduleDetails);
-    }
-    if (modData.countryId == undefined || modData.countryId == null) {
-        modData.countryId = "";
-    } else {
-        modData.countryId = modData.countryId;
-    }
-    if (modData.countryName == undefined || modData.countryName == null) {
-        modData.countryName = "";
-    } else {
-        modData.countryName = modData.countryName;
-    }
-    if (modData.stateId == undefined || modData.stateId == null) {
-        modData.stateId = "";
-    } else {
-        modData.stateId = modData.stateId;
-    }
-    if (modData.stateName == undefined || modData.stateName == null) {
-        modData.stateName = "";
-    } else {
-        modData.stateName = modData.stateName;
-    }
-    if (modData.districtId == undefined || modData.districtId == null) {
-        modData.districtId = "";
-    } else {
-        modData.districtId = modData.districtId;
-    }
-    if (modData.districtName == undefined || modData.districtName == null) {
-        modData.districtName = "";
-    } else {
-        modData.districtName = modData.districtName;
-    }
-    if (modData.zoneId == undefined || modData.zoneId == null) {
-        modData.zoneId = "";
-    } else {
-        modData.zoneId = modData.zoneId;
-    }
-    if (modData.zoneName == undefined || modData.zoneName == null) {
-        modData.zoneName = "";
-    } else {
-        modData.zoneName = modData.zoneName;
-    }
-    if (modData.designationId == undefined || modData.designationId == null) {
-        modData.designationId = "";
-    } else {
-        modData.designationId = modData.designationId;
-    }
-    if (modData.lastLevelLocations == undefined || modData.lastLevelLocations == null) {
-        modData.lastLevelLocations = {};
-    } else {
-        modData.lastLevelLocations = modData.lastLevelLocations;
-    }
-    if (modData.clientSettings == undefined || modData.clientSettings == null) {
-        modData["clientLogo"] = [];
-    } else {
-        modData["clientLogo"] = getClientLogo(modData.clientSettings);
-    }
-    if (modData.clientSettings == undefined || modData.clientSettings == null) {
-        modData["orderOTPVerification"] = [];
-    } else {
-        modData["orderOTPVerification"] = getClientOtpVirification(modData.clientSettings);
-    }
+    let modData = data.response;
+    for (let i = 0; i < modData.length; i++) {
+        if (modData[i].firstName == undefined || modData[i].firstName == null) {
+            modData[i].firstName = "";
+        } else {
+            modData[i].firstName = modData[i].firstName;
+        }
+        if (modData[i].lastName == undefined || modData[i].lastName == null) {
+            modData[i].lastName = "";
+        } else {
+            modData[i].lastName = modData[i].lastName;
+        }
+        if (modData[i].email == undefined || modData[i].email == null) {
+            modData[i].email = "";
+        } else {
+            modData[i].email = modData[i].email;
+        }
+        if (modData[i].password == undefined || modData[i].password == null) {
+            modData[i].password = "";
+        } else {
+            modData[i].password = modData[i].password;
+        }
+        if (modData[i].username == undefined || modData[i].username == null) {
+            modData[i].username = "";
+        } else {
+            modData[i].username = modData[i].username;
+        }
+        if (modData[i].userType == undefined || modData[i].userType == null) {
+            modData[i].userType = "";
+        } else {
+            modData[i].userType = modData[i].userType;
+        }
+        if (modData[i].profileImgUrl == undefined || modData[i].profileImgUrl == null) {
+            modData[i].profileImgUrl = "";
+        } else {
+            modData[i].profileImgUrl = modData[i].profileImgUrl;
+        }
+        if (modData[i].clientId == undefined || modData[i].clientId == null) {
+            modData[i].clientId = "";
+        } else {
+            modData[i].clientId = modData[i].clientId;
+        }
+        if (modData[i].clientName == undefined || modData[i].clientName == null) {
+            modData[i].clientName = "";
+        } else {
+            modData[i].clientName = modData[i].clientName;
+        }
+        modData[i]["id"] = modData[i].clientId;
+        modData[i]["name"] = modData[i].clientName;
 
-    modData["moduleType"] = "LMS"
-    modData["loginType"] = type
+
+        if (modData[i].clientUserId == undefined || modData[i].clientUserId == null) {
+            modData[i].customerId = "";
+        } else {
+            modData[i].customerId = modData[i].userType == 6 ? modData[i].clientUserId : "";
+        }
+        if (modData[i].userId == undefined || modData[i].userId == null) {
+            modData[i].userId = "";
+        } else {
+            modData[i].userId = modData[i].userId;
+        }
+        modData[i]["contactTypeId"] = modData[i].userType == 6 ? Object.keys(modData[i].forCustomerUser).length > 0 ? modData[i].forCustomerUser.contactTypeId : "" : modData[i].designationId;
+        modData[i]["usertypeId"] = modData[i].userType == 6 ? Object.keys(modData[i].forCustomerUser).length > 0 ? modData[i].forCustomerUser.contactTypeId : "" : modData[i].designationId;
+        modData[i]["mstSlNo"] = Object.keys(modData[i].forCustomerUser).length > 0 ? modData[i].forCustomerUser.mstSlNo : "";
+        modData[i]["customerAccessTypeName"] = Object.keys(modData[i].forCustomerUser).length > 0 ? modData[i].forCustomerUser.customerAccessTypeName : "";
+        modData[i]["customerAccessType"] = Object.keys(modData[i].forCustomerUser).length > 0 ? modData[i].forCustomerUser.customerAccessType : "";
+        if (modData[i].createdAt == undefined || modData[i].createdAt == null) {
+            modData[i].createdAt = "";
+        } else {
+            modData[i].createdAt = modData[i].createdAt;
+        }
+        if (modData[i].token == undefined || modData[i].token == null) {
+            modData[i].token = "";
+        } else {
+            modData[i].token = modData[i].token;
+        }
+        if (modData[i].forCustomerUser == undefined || modData[i].forCustomerUser == null || Object.keys(modData[i].forCustomerUser).length == 0) {
+            modData[i].forCustomerUser = {};
+        } else {
+            modData[i].forCustomerUser = modData[i].forCustomerUser;
+        }
+        if (modData[i].locationData == undefined || modData[i].locationData == null) {
+            modData[i].locationData = [];
+        } else {
+            modData[i].locationData = modifyLocationData(modData[i].locationData);
+        }
+        if (modData[i].clientSettings == undefined || modData[i].clientSettings == null) {
+            modData[i].clientSettings = [];
+        } else {
+            modData[i].clientSettings = modifyClientSettings(modData[i].clientSettings);
+        }
+        if (modData[i].moduleDetails == undefined || modData[i].moduleDetails == null) {
+            modData[i].moduleDetails = [];
+        } else {
+            modData[i].moduleDetails = modifyModuleDetails(modData[i].moduleDetails);
+        }
+        if (modData[i].countryId == undefined || modData[i].countryId == null) {
+            modData[i].countryId = "";
+        } else {
+            modData[i].countryId = modData[i].countryId;
+        }
+        if (modData[i].countryName == undefined || modData[i].countryName == null) {
+            modData[i].countryName = "";
+        } else {
+            modData[i].countryName = modData[i].countryName;
+        }
+        if (modData[i].stateId == undefined || modData[i].stateId == null) {
+            modData[i].stateId = "";
+        } else {
+            modData[i].stateId = modData[i].stateId;
+        }
+        if (modData[i].stateName == undefined || modData[i].stateName == null) {
+            modData[i].stateName = "";
+        } else {
+            modData[i].stateName = modData[i].stateName;
+        }
+        if (modData[i].districtId == undefined || modData[i].districtId == null) {
+            modData[i].districtId = "";
+        } else {
+            modData[i].districtId = modData[i].districtId;
+        }
+        if (modData[i].districtName == undefined || modData[i].districtName == null) {
+            modData[i].districtName = "";
+        } else {
+            modData[i].districtName = modData[i].districtName;
+        }
+        if (modData[i].zoneId == undefined || modData[i].zoneId == null) {
+            modData[i].zoneId = "";
+        } else {
+            modData[i].zoneId = modData[i].zoneId;
+        }
+        if (modData[i].zoneName == undefined || modData[i].zoneName == null) {
+            modData[i].zoneName = "";
+        } else {
+            modData[i].zoneName = modData[i].zoneName;
+        }
+        if (modData[i].designationId == undefined || modData[i].designationId == null) {
+            modData[i].designationId = "";
+        } else {
+            modData[i].designationId = modData[i].designationId;
+        }
+        if (modData[i].lastLevelLocations == undefined || modData[i].lastLevelLocations == null) {
+            modData[i].lastLevelLocations = {};
+        } else {
+            modData[i].lastLevelLocations = modData[i].lastLevelLocations;
+        }
+        if (modData[i].clientSettings == undefined || modData[i].clientSettings == null) {
+            modData[i]["clientLogo"] = [];
+        } else {
+            modData[i]["clientLogo"] = getClientLogo(modData[i].clientSettings);
+        }
+        if (modData[i].clientSettings == undefined || modData[i].clientSettings == null) {
+            modData[i]["orderOTPVerification"] = [];
+        } else {
+            modData[i]["orderOTPVerification"] = getClientOtpVirification(modData[i].clientSettings);
+        }
+
+        modData[i]["moduleType"] = "LMS"
+        modData[i]["loginType"] = modData[i].userType == "6" ? "customer" : "employee"
+
+    }
     return modData;
 }
+
+
+//-------------------------------------------------------------------------------
 
 function getFirstName(name) {
     let txt = name.split(" ")
@@ -375,6 +405,11 @@ export function modCustomerLoginData(data, type) {
         modObj["mstSlNo"] = "";
     } else {
         modObj["mstSlNo"] = modData.mstSlNo;
+    }
+    if (modData.customerAccessTypeName == undefined || modData.customerAccessTypeName == null) {
+        modObj["customerAccessTypeName"] = "";
+    } else {
+        modObj["customerAccessTypeName"] = modData.customerAccessTypeName;
     }
     if (modData.custBusinessName == undefined || modData.custBusinessName == null) {
         modObj["custBusinessName"] = "";
@@ -613,7 +648,7 @@ function modifyChildModuleData(data) {
 
 
 export function modifyMenuPermisionData(data) {
-    let modData = { "sfa": [], "crm": [], "mms": [] };
+    let modData = { "sfa": [], "crm": [], "mms": [], "lms": [] };
     for (let i = 0; i < data.length; i++) {
         switch (data[i].specificModule) {
             case "sfa":
@@ -624,6 +659,9 @@ export function modifyMenuPermisionData(data) {
                 break;
             case "mms":
                 modData.mms.push(data[i]);
+                break;
+            case "lms":
+                modData.lms.push(data[i]);
                 break;
             default:
                 break;

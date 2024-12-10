@@ -12,7 +12,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { stateCheckForNetwork, stateUserInformation, userSelectedBeatRouteData } from "../../redux/Sales360Action";
-import { Toaster } from '../../services/common-view-function'
+import { StorageDataModification, Toaster } from '../../services/common-view-function'
 import { CheckBox, Modal, TextInputBox } from '../../shared'
 
 const deliveryAddressArr = [
@@ -35,7 +35,7 @@ class CatalogueItemDetails extends Component {
         this.state = {
             detailsObj: {},
             pageLoader: false,
-
+            userData: {},
             sugesstedItemsArr: [],
             claimGiftsArr: [],
             // deliveryAddress: deliveryAddressArr,
@@ -48,7 +48,14 @@ class CatalogueItemDetails extends Component {
             itemData: this.props.route.params.data,
             isVisibleClaimItem: false,
             claimLoader: false,
-            isVisibleAddressModal: false
+            isVisibleAddressModal: false,
+            cartData: {
+                count: 0
+            },
+            cartLoader: false,
+            countLoader: false,
+            activePoint: 0,
+            propData: this.props.route.params.propData ? this.props.route.params.propData : {}
         }
     }
 
@@ -60,9 +67,30 @@ class CatalogueItemDetails extends Component {
     }
 
     load = async () => {
+        let activePointData = await StorageDataModification.activePointData({}, "get");
+        let userInfo = await StorageDataModification.userCredential({}, "get")
+        this.setState({ activePoint: activePointData, userData: userInfo })
+        await this.getCartCount();
         await this.getSuggestedItems("lt")
         await this.getClaimedItems("gt")
         StoreUserOtherInformations("", {}, this.props);
+    }
+
+    getCartCount = async () => {
+        this.setState({ countLoader: true })
+        let reqData = {
+            "limit": 100,
+            "offset": "0",
+            "catalogueId": this.state.itemData.catalogueId,
+            "targetId": Object.keys(this.state.propData).length > 0 ? this.state.propData.id : this.state.userData.customerId,
+            "groupTypeId": 1
+        }
+        let responseData = await MiddlewareCheck("getCatalogueCartCountByTargetId", reqData, this.props)
+        if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+            this.state.cartData.count = responseData.response.total
+        }
+        this.setState({ countLoader: false })
+
     }
 
     getSuggestedItems = async (type) => {
@@ -71,7 +99,7 @@ class CatalogueItemDetails extends Component {
             "redeemPoints": this.state.itemData.amount,
             "itemId": this.state.itemData.id,
             "limit": 10,
-            "offset": 0,
+            "offset": "0",
             "type": type
         }
         this.setState({ pageLoader: true })
@@ -91,7 +119,7 @@ class CatalogueItemDetails extends Component {
             "redeemPoints": this.state.itemData.amount,
             "itemId": this.state.itemData.id,
             "limit": 10,
-            "offset": 0,
+            "offset": "0",
             "type": type
         }
         this.setState({ pageLoader: true })
@@ -108,7 +136,7 @@ class CatalogueItemDetails extends Component {
         return (
             <View style={{ marginHorizontal: 15, marginVertical: 10 }}>
                 <View>
-                    <Image source={{ uri: this.state.itemData.image }} style={{ height: 325, resizeMode: "contain", borderRadius: 20 }} />
+                    <Image source={{ uri: this.state.itemData.src }} style={{ height: 325, resizeMode: "contain", borderRadius: 20 }} />
                 </View>
             </View>
         )
@@ -136,14 +164,49 @@ class CatalogueItemDetails extends Component {
             let modAddress = modDeliveryAddress(responseData.response)
             this.setState({ deliveryAddress: modAddress, addressLoader: false })
         }
+    }
+
+    onAddToCart = async () => {
+        // this.setState({ isVisibleAddressModal: true, addressLoader: true })
+        // await this.getDeliveryAddress()
+        this.setState({ cartLoader: true })
+        let reqData = {
+            targetId: Object.keys(this.state.propData).length > 0 ? this.state.propData.id : this.state.userData.customerId,
+            groupTypeId: 1, //for customer/2 for employee
+            cart: [{
+                catalogueId: this.state.itemData.catalogueId,
+                categoryId: this.state.itemData.categoryId,
+                groupId: this.state.itemData.groupId,
+                itemId: this.state.itemData.id,
+            }]
+        }
+        let responseData = await MiddlewareCheck("addCatalogueCart", reqData, this.props)
+        if (responseData) {
+            if (responseData.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                Toaster.ShortCenterToaster(responseData.message)
+                this.getCartCount()
+            }
+        }
+        this.setState({ cartLoader: false })
+    }
+
+    getCartDetails = async () => {
+        let reqData = {
+            "limit": 100,
+            "offset": "0",
+            "catalogueId": this.state.itemData.catalogueId,
+            "targetId": Object.keys(this.state.propData).length > 0 ? this.state.propData.id : this.state.userData.userId,
+            "groupTypeId": 1
+        }
+        let responseData = await MiddlewareCheck("getCatalogueCartByTargetId", reqData, this.props)
 
     }
 
     pointClaimSec = () => {
-        const onClaim = async () => {
-            this.setState({ isVisibleAddressModal: true, addressLoader: true })
-            await this.getDeliveryAddress()
-        }
+        // const onClaim = async () => {
+        //     this.setState({ isVisibleAddressModal: true, addressLoader: true })
+        //     await this.getDeliveryAddress()
+        // }
         return (
             <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -153,16 +216,17 @@ class CatalogueItemDetails extends Component {
                         <Image source={ImageName.YELLOW_STAR} style={{ height: 18, width: 18, resizeMode: "contain", marginLeft: 10 }} />
                     </View>
                     <View style={{ flex: 1 }} />
-                    <TouchableOpacity onPress={() => onClaim()} disabled={this.state.claimLoader}>
-                        {/* <TouchableOpacity > */}
-                        <View style={{ borderRadius: 20, borderWidth: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: 15, paddingVertical: 8, backgroundColor: Color.COLOR.RED.AMARANTH }}>
-                            {this.state.claimLoader ?
-                                <ActivityIndicator size={"small"} color={"#fff"} />
-                                :
-                                <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 16 }}>Claim Now</Text>
-                            }
-                        </View>
-                    </TouchableOpacity>
+                    {(this.props.route.params.dataFrom == "RequestRedemtionCategory") ?
+                        <TouchableOpacity onPress={() => this.onAddToCart()} >
+                            <View style={{ borderRadius: 20, borderWidth: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: 15, paddingVertical: 8, backgroundColor: Color.COLOR.RED.AMARANTH }}>
+                                {this.state.cartLoader ?
+                                    <ActivityIndicator size={"small"} color={"#fff"} />
+                                    :
+                                    <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontFamily: FontFamily.FONTS.INTER.SEMI_BOLD, fontSize: 16 }}>Add to Cart</Text>
+                                }
+                            </View>
+                        </TouchableOpacity>
+                        : null}
                 </View>
                 {/* <View>
                     <View style={{ marginTop: 5, borderRadius: 20, borderWidth: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 15, paddingVertical: 3, alignSelf: "flex-start", borderColor: "#817D7A" }}>
@@ -449,18 +513,77 @@ class CatalogueItemDetails extends Component {
         )
     }
 
+    _onBack = () => {
+        this.props.navigation.goBack();
+    }
+
+    // for navigation to cart
+    onCart = () => {
+        this.props.navigation.replace("OrderCartDetails", { propData: this.props.route.params.propData, data: this.props.route.params.data, cartData: this.state.cartData,selectedFinancialYearObj:this.props.route.params.selectedFinancialYearObj })
+    }
+
+
+    //header section
+    headerSec = () => {
+        return (
+            <View style={styles.headerSec}>
+                <TouchableOpacity style={{ flex: 0.1 }} activeOpacity={0.9} onPress={() => this._onBack()}>
+                    <Image source={ImageName.BACK_IMG} style={styles.backImg} />
+                </TouchableOpacity>
+                <View style={styles.profileTab}>
+                    <View style={{ marginLeft: 5, flex: 1 }}>
+                        <Text style={styles.titleTxt} numberOfLines={1}>Item Details</Text>
+                    </View>
+                </View>
+                {/* <View style={{ flex: 0.1, justifyContent: "center" }}>
+                    <TouchableOpacity activeOpacity={0.9} >
+                        <Image source={ImageName.SEARCH_LOGO_WITH_BLUE_BORDER} style={{ height: 30, width: 30, resizeMode: 'contain' }} />
+                    </TouchableOpacity>
+                </View>
+                <View style={{ flex: 0.1, justifyContent: "center" }}>
+                    <TouchableOpacity activeOpacity={0.9} >
+                        <Image source={ImageName.FILTER_WITH_BLUE_BORDER} style={{ height: 30, width: 30, resizeMode: 'contain' }} />
+                    </TouchableOpacity>
+                </View> */}
+                {/* <View style={{flex:1}}/> */}
+                {(this.props.route.params.dataFrom == "RequestRedemtionCategory") ?
+                    <TouchableOpacity activeOpacity={0.9} style={styles.cardTab} onPress={() => this.onCart()}>
+                        <View>
+                            <Image source={ImageName.SHOPING_ORDER_BOX} style={styles.shoppingImg} />
+                        </View>
+                        <View style={{ width: 10 }} />
+                        <View>
+                            <Text style={styles.cartCountTxt}>{this.state.cartData.count}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    :
+                    null}
+            </View>
+        )
+    };
+
+    productItemTitleSec = () => {
+        return (
+            <View style={{ marginTop: 10, marginHorizontal: 15 }}>
+                <Text style={{ color: "#172834", fontSize: FontSize.LG, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, }}>{this.state.itemData.label}</Text>
+            </View>
+        )
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <GiftClaimModal isVisible={this.state.isVisibleClaimItem} onCloseModal={() => this.setState({ isVisibleClaimItem: false })} />
-                <Header {...this.props} onRefresh={() => console.log("")} onApplyFilter={() => console.log("")} onResetFilter={() => console.log("")} onPressNotification={() => this.onNotification()} />
+                {/* <GiftClaimModal isVisible={this.state.isVisibleClaimItem} onCloseModal={() => this.setState({ isVisibleClaimItem: false })} />
+                <Header {...this.props} onRefresh={() => console.log("")} onApplyFilter={() => console.log("")} onResetFilter={() => console.log("")} onPressNotification={() => this.onNotification()} /> */}
+                {this.headerSec()}
                 <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <ActivePointAndLocationSelectionTab {...this.props} isVisibleLocation={false} />
+                    {this.productItemTitleSec()}
                     {this.productItemImageSec()}
                     {this.productItemDescriptionSec()}
                     {this.pointClaimSec()}
-                    {this.state.sugesstedItemsArr.length > 0 ? this.suggestedProductSec() : null}
-                    {this.state.claimGiftsArr.length > 0 ? this.earnMoreProductSec() : null}
+                    {/* {this.state.sugesstedItemsArr.length > 0 ? this.suggestedProductSec() : null}
+                    {this.state.claimGiftsArr.length > 0 ? this.earnMoreProductSec() : null} */}
                     <View style={{ height: 50 }} />
                 </ScrollView>
                 {this.modalSec()}

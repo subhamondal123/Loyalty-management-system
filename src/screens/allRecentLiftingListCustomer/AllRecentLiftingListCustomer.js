@@ -99,7 +99,7 @@ class AllRecentLiftingListCustomer extends React.Component {
 
     fetchSaleEditPermissionApiCall = async () => {
         let userInfo = await StorageDataModification.userCredential({}, "get");
-        let reqData = { targetTypeId: userInfo.designationId };
+        let reqData = { "targetTypeId": userInfo.usertypeId, "refCustomerId": userInfo.customerId.toString() };
         let responseData = await MiddlewareCheck("fetchSaleEditPermission", reqData, this.props);
         if (responseData) {
             if (responseData.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
@@ -114,8 +114,9 @@ class AllRecentLiftingListCustomer extends React.Component {
     fetchRecentSecondarySalesList = async () => {
         this.setState({ refreshing: false })
         let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
             searchText: this.state.searchText,
-            refUserId: this.state.userInfo.customerId,
+            refUserId: this.state.userInfo.customerId.toString(),
             mstSlNo: this.state.userInfo.mstSlNo.toString(),
             offset: (this.state.pageNum * this.state.limit).toString(),
             limit: this.state.limit.toString(),
@@ -233,11 +234,11 @@ class AllRecentLiftingListCustomer extends React.Component {
     // loader for scroll
     renderLoader = () => {
         return this.state.listLoader ? (
-            <View style={{ marginBottom: 120 }}>
+            <View style={{ marginBottom: 200 }}>
                 <Loader type={"normal"} />
             </View>
         ) : (
-            <View style={{ marginBottom: 120 }} />
+            <View style={{ marginBottom: 200 }} />
         );
     };
 
@@ -370,6 +371,7 @@ class AllRecentLiftingListCustomer extends React.Component {
 
     checkCappingValue = async () => {
         let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
             "salesDate": DateConvert.formatYYYYMMDD(this.state.selectedLiftingItem.salesDate),
             "fromContactTypeId": this.state.selectedLiftingItem.liftFromUserTypeId.toString(),
             "toContactTypeId": this.state.selectedLiftingItem.refUserTypeId.toString(),
@@ -396,6 +398,7 @@ class AllRecentLiftingListCustomer extends React.Component {
             let cappingCheck = await this.checkCappingValue()
             if (cappingCheck) {
                 const reqData = {
+                    "refCustomerId": this.state.userInfo.customerId.toString(),
                     "referUserId": this.state.selectedLiftingItem.referUserId.toString(),
                     "liftFromUserId": this.state.selectedLiftingItem.liftFromUserId.toString(),
                     "forFinancialYearId": this.state.selectedLiftingItem.financialYearId,

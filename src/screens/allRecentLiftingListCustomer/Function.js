@@ -2,7 +2,6 @@ import { Toaster } from "../../services/common-view-function";
 import { App_uri } from "../../services/config";
 
 export function modRecentLiftingData(data, permData) {
-    console.log("permData:::permData:::", permData);
     let respData = { list: [], totalMtd: 0, count: 0 };
     if (data.details) {
         let total = getTotalMtd(data)
@@ -137,7 +136,6 @@ export function modRecentLiftingData(data, permData) {
 }
 
 hasEditPermission = (createdAt, permData) => {
-    console.log("permData---------------=====", JSON.stringify(permData));
     if (permData) {
         if (permData.length > 0) {
             const createDate = new Date(createdAt);
@@ -145,14 +143,11 @@ hasEditPermission = (createdAt, permData) => {
             const differenceInMs = currentDate - createDate;
             const differenceInHours = differenceInMs / (1000 * 60 * 60); // Convert milliseconds to hours
             if (differenceInHours < (permData[0].days > 0 ? permData[0].days * 24 : 0)) {
-                console.log("step 1-----")
                 return true;
             } else {
-                console.log("step 2-----")
                 return false;
             }
         } else {
-            console.log("step 3-----")
             return false;
         }
     }
@@ -200,7 +195,6 @@ function getLeafLevelProduct(arr) {
 }
 
 export function validateData(data) {
-    console.log("data-==-==-=--", JSON.stringify(data.length));
     let errorCount = 0;
 
     if (data == undefined || data == null || data.length == 0) {

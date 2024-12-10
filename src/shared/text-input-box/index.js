@@ -65,10 +65,11 @@ function TextInputBox({
     labelStyle,
     labelText,
     isLabelVisible,
-    isHidden
+    isHidden,
+    mandatoryField
 }) {
 
-    if(isHidden) return null;
+    if (isHidden) return null;
 
     const inputRef = useRef(null);
     // useEffect(() => {
@@ -119,7 +120,7 @@ function TextInputBox({
         fontSize: fontSize,
         color: inactiveTextColor,
         fontFamily: fontFamily,
-        marginLeft: isLeftIcon ? 10 : 21,
+        marginLeft: isLeftIcon ? 10 : mandatoryField ? 0 : 21,
         marginRight: isRightIcon ? 1 : 21,
         flex: 1
     }
@@ -196,6 +197,7 @@ function TextInputBox({
                     :
                     null
                 }
+                {mandatoryField ? <Text style={{ fontSize: fontSize, color: "red", fontFamily: fontFamily,marginLeft:21 }}>*</Text> : null}
 
                 <TextInput
                     style={[isActive ? activeTextInput : textInput, additionalTextInput]}
@@ -269,7 +271,7 @@ function TextInputBox({
                         :
                         null
                     }
-
+                    {mandatoryField ? <Text style={{ fontSize: fontSize, color: "red", fontFamily: fontFamily }}>*</Text> : null}
                     <TextInput
                         style={[isActive ? activeNewTextInput : newTextInput, additionalTextInput]}
                         placeholder={placeholder}
@@ -384,7 +386,8 @@ TextInputBox.defaultProps = {
         color: Color.COLOR.BLACK.PURE_BLACK
     },
     labelText: "Label",
-    isLabelVisible: false
+    isLabelVisible: false,
+    mandatoryField: false
 };
 
 TextInputBox.propTypes = {
@@ -449,6 +452,7 @@ TextInputBox.propTypes = {
     labelStyle: PropTypes.instanceOf(Object),
     labelText: PropTypes.string,
     isLabelVisible: PropTypes.bool,
+    mandatoryField: PropTypes.bool,
 };
 
 

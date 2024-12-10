@@ -47,7 +47,7 @@ export function modifyData(data) {
                     modObj["masterContactTypesName"] = pjpData[i].masterContactTypesName;
                 }
                 if (pjpData[i].phoneNumber == undefined || pjpData[i].phoneNumber == null) {
-                    modObj["phone"] = "";
+                    modObj["phone"] = "NA";
                 } else {
                     modObj["phone"] = pjpData[i].phoneNumber;
                 }
@@ -143,6 +143,12 @@ export function modifyData(data) {
                     modObj["customerAccessTypeName"] = pjpData[i].customerAccessTypeName;
                 }
 
+                if (pjpData[i].locationData == undefined || pjpData[i].locationData == null || pjpData[i].locationData.length == 0) {
+                    modObj["locationData"] = [];
+                } else {
+                    modObj["locationData"] = modLocationData(pjpData[i].locationData);
+                }
+
 
                 modObj["check"] = false;
                 modObj["tick"] = false;
@@ -152,4 +158,15 @@ export function modifyData(data) {
         }
     }
     return (respData);
+}
+
+function modLocationData(data) {
+    let arr = data[0];
+
+    // Sort the array by slNo in descending order
+    const sortedData = arr.sort((a, b) => b.slNo - a.slNo);
+
+    // Extract the last two levels (highest slNo values)
+    const lastTwoLevels = sortedData.slice(0, 2);
+    return lastTwoLevels
 }

@@ -50,8 +50,6 @@ class CustomerList extends Component {
     }
 
     componentDidMount = async () => {
-        let locationData = await StorageDataModification.locationMappedData({}, "get");
-        console.log("locationData::::-----", JSON.stringify(locationData));
         StoreUserOtherInformations("", {}, this.props);
         // this._unsubscribe = this.props.navigation.addListener(
         //     'focus', async () => {
@@ -83,45 +81,16 @@ class CustomerList extends Component {
         this.setState(this.state)
     }
 
-    // onFetchCustomerType = async () => {
-
-    //     let favouriteObj = {
-    //         id: "",
-    //         name: "Favourite",
-    //         check: true
-    //     }
-    //     this.setLoader(true)
-    //     let responseData = await MiddlewareCheck("getContactTypes_v2", { "isProject": "" }, this.props);
-    //     if (responseData) {
-    //         if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-    //             this.state.tabData = modifyCustomerTypeArr(responseData.response)
-    //             const selectedCustomerObj = this.state.tabData.find(obj => obj.check === true);
-    //             console.log("selectedCustomerObj-----", selectedCustomerObj)
-    //             this.state.requestApiData.selectedCustomerType = selectedCustomerObj;
-    //             this.setState({
-    //                 // tabData: [favouriteObj, ...this.state.tabData]
-    //                 tabData: this.state.tabData,
-    //                 // selectedCustomerObj: selectedCustomerObj,
-    //                 requestApiData: this.state.requestApiData
-    //             })
-    //         } else {
-    //             Toaster.ShortCenterToaster(responseData.message)
-    //         }
-    //     }
-    //     this.setState({ tabLoader: false ,listLoader:false})
-    //     StoreUserOtherInformations("", {}, this.props);
-    // }
-
     onFetchContactType = async () => {
         let userInfo = await StorageDataModification.userCredential({}, "get");
 
         let reqData = {
+            "refCustomerId": userInfo.customerId.toString() ,
             "fromContactTypeId": this.props.Sales360Redux.loginData.loginType == "employee" ? null : userInfo.contactTypeId,
             "isCustomer": this.props.Sales360Redux.loginData.loginType == "employee" ? "0" : "1"
         }
         await this.setLoader(true)
         let responseData = await MiddlewareCheck("getCappingContactTypes", reqData, this.props);
-        console.log("getCappingContactTypes:::resss------", JSON.stringify(responseData));
         if (responseData) {
             if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
                 this.state.tabData = modifyCustomerTypeArr(responseData.response)
@@ -147,7 +116,6 @@ class CustomerList extends Component {
     }
 
     onSelectLocation = async (val) => {
-        console.log("location val======", JSON.stringify(val));
         await this.setLoader(true)
         let modObj = {
             "SlNo": "",
@@ -176,8 +144,14 @@ class CustomerList extends Component {
         // if (this.state.requestApiData.selectedCustomerType.mstSlNo == 1) {
         //     // this.props.navigation.navigate("ConfirmLiftingListForCustomer", { propData: item })
         // } else {
-        this.props.navigation.navigate(this.state.selectedScreen, { propData: item, contactTypeData: this.state.requestApiData.selectedCustomerType ? this.state.requestApiData.selectedCustomerType : {} })
         // }
+        if (this.props.route.params.data == "RequestRedemtionCategory") {
+            this.props.navigation.navigate("RequestRedemtionCategory", { "propData": item, data: "RequestRedemtionCategory", dataFrom: "RequestRedemtionCategory" })
+        } else if (this.props.route.params.data == "Catalogue") {
+            this.props.navigation.navigate("Catalogue", { "propData": item, data: "catalogue", dataFrom: "catalogue" })
+        } else {
+            this.props.navigation.navigate(this.state.selectedScreen, { propData: item, contactTypeData: this.state.requestApiData.selectedCustomerType ? this.state.requestApiData.selectedCustomerType : {} })
+        }
     }
 
     onSelectInfluencer = async (item) => {
@@ -191,16 +165,22 @@ class CustomerList extends Component {
         //         if (responseData.response) {
         //             Toaster.ShortCenterToaster("Lifting Data already updated. You can do it again tomorrow.");
         //         } else {
-        this.props.navigation.navigate("ConfirmNewLifting", { propData: item, contactTypeData: this.state.requestApiData.selectedCustomerType ? this.state.requestApiData.selectedCustomerType : {} })
+        // this.props.navigation.navigate("ConfirmNewLifting", { propData: item, contactTypeData: this.state.requestApiData.selectedCustomerType ? this.state.requestApiData.selectedCustomerType : {} })
         //         }
         //     }
         // }
-        // ConfirmNewLifting
-        // if (this.props.route.params.data == "ConfirmLiftingListForCustomer") {
 
-        // } else {
-        // this.props.navigation.navigate("ConfirmNewLifting", { propData: item })
-        // }
+        if (this.props.route.params.data == "ConfirmNewLifting") {
+            this.props.navigation.navigate("ConfirmNewLifting", { propData: item, contactTypeData: this.state.requestApiData.selectedCustomerType ? this.state.requestApiData.selectedCustomerType : {} })
+        } else if (this.props.route.params.data == "RequestRedemtionCategory") {
+            this.props.navigation.navigate("RequestRedemtionCategory", { "propData": item, data: "RequestRedemtionCategory", dataFrom: "RequestRedemtionCategory" })
+        } else if (this.props.route.params.data == "Catalogue") {
+            this.props.navigation.navigate("Catalogue", { "propData": item, data: "catalogue", dataFrom: "catalogue" })
+        }
+        else if (this.props.route.params.data == "PassbookAndRedemption") {
+            this.props.navigation.navigate("PassbookAndRedemption", { "propData": item, data: "PassbookAndRedemption", dataFrom: "PassbookAndRedemption" })
+        }
+
     }
 
     tabSec = () => {
@@ -325,18 +305,16 @@ class CustomerList extends Component {
         }
         const onPressSearchIcon = async () => {
             await this.setLoader(true)
-            console.log("this.state.selectedCustomerObj", this.state.selectedCustomerObj)
             this.state.requestApiData.searchText = this.state.searchText;
             this.state.requestApiData.selectedCustomerType = this.state.selectedCustomerObj;
-            console.log("this.state.requestApiData.selectedCustomerType======", this.state.requestApiData.selectedCustomerType)
             this.setState({
                 requestApiData: this.state.requestApiData
             })
             await this.setLoader(false)
         }
         return (
-            <Animated.View style={{ marginTop: 10, alignItems: 'center', marginHorizontal: 15, opacity: headerOpacity, height: headerHeight }}>
-                {/* <View style={{ flex: 1 }}> */}
+            // <Animated.View style={{ marginTop: 10, alignItems: 'center', marginHorizontal: 15, opacity: headerOpacity, height: headerHeight }}>
+            <View style={{ marginTop: 10, alignItems: 'center', marginHorizontal: 15}}>
                 <TextInputBox
                     placeholder={"Search Customer Name or Number"}
                     isRightIcon={true}
@@ -349,8 +327,8 @@ class CustomerList extends Component {
                     onChangeText={(value) => onSearch(value)}
                     onPressRightIcon={() => onPressSearchIcon()}
                 />
-                {/* </View> */}
-            </Animated.View>
+                </View>
+            // </Animated.View> 
         )
     }
 

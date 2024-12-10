@@ -4,13 +4,14 @@ import styles from './Style'
 import { PassbookTransactionDetailModal } from '../../../../pageShared'
 import { Color, Dimension, FontFamily, FontSize, ImageName } from '../../../../enums'
 import SvgComponent from '../../../../assets/svg'
-import { BigTextButton, Loader, NoDataFound, TextInputBox } from '../../../../shared'
+import { BigTextButton, DropdownInputBox, Loader, NoDataFound, TextInputBox } from '../../../../shared'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import { modifyListData } from './Function'
+import { formatYearRange, modifyFinancialYearDropdownData, modifyListData } from './Function'
 import { MiddlewareCheck } from '../../../../services/middleware'
 import { ErrorCode } from '../../../../services/constant'
-import { DateConvert } from '../../../../services/common-view-function'
+import { DateConvert, StorageDataModification } from '../../../../services/common-view-function'
 import { RefreshControl } from 'react-native-gesture-handler'
+import { App_uri } from '../../../../services/config'
 
 
 export default class Redemption extends Component {
@@ -32,6 +33,10 @@ export default class Redemption extends Component {
             scrollY: new Animated.Value(0),
             headerHeight: new Animated.Value(50),
             selectedItem: {},
+            userData: {},
+            propData: this.props.route.params.propData ? this.props.route.params.propData : {},
+            selectedFinancialYearObj: {},
+            financialYearArr: [],
 
         }
     }
@@ -42,8 +47,11 @@ export default class Redemption extends Component {
     }
 
     // this is the first function where set the state data
-    _load = () => {
-        this._apiCallRes();
+    _load = async () => {
+        let userInfo = await StorageDataModification.userCredential({}, "get");
+        this.setState({ userData: userInfo })
+        await this.setFinancialYear()
+        await this._apiCallRes();
     }
 
     _apiCallRes = async () => {
@@ -51,10 +59,41 @@ export default class Redemption extends Component {
         let reqData = {
             "limit": this.state.limit.toString(),
             "offset": (this.state.pageNum * this.state.limit).toString(),
+            "refUserId": Object.keys(this.state.propData).length > 0 ? this.state.propData.id : this.state.userData.customerId.toString(),
+            "forFinancialYearId": this.state.selectedFinancialYearObj.id,
         }
         await this.getRedeemList(reqData);
     }
 
+    setFinancialYear = async () => {
+        let responseData = await MiddlewareCheck("getFinYear", {}, this.props)
+        if (responseData) {
+            if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                this.state.selectedFinancialYearObj = await this.modSelectedFinYear(responseData.response)
+                this.setState({
+                    financialYearArr: modifyFinancialYearDropdownData(responseData.response),
+                    selectedFinancialYearObj: this.state.selectedFinancialYearObj
+                })
+            }
+        }
+
+    }
+
+    modSelectedFinYear = async (data) => {
+        let finYearData = await StorageDataModification.currentFinancialYearData({}, "get")
+        let respObj = {}
+        if (data) {
+            if (data.length > 0) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].financialyearId == finYearData.financialyearId) {
+                        respObj["id"] = data[i].financialyearId
+                        respObj["name"] = formatYearRange(data[i].financialYearStartDate, data[i].financialYearEndDate)
+                    }
+                }
+            }
+        }
+        return respObj
+    }
 
     onRefresh = async () => {
         await this.setInitialStateData()
@@ -126,19 +165,19 @@ export default class Redemption extends Component {
                                 <Text style={{ color: '#535C63', fontSize: 12, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, marginLeft: 5 }}>{DateConvert.formatDDfullMonthYYYY(item.createdAt)}</Text>
                             </View>
                             <View style={{ flex: 1 }} />
-                            <View style={{ backgroundColor: item.approvedStatus == 0 ? "#E3BE5D" : item.approvedStatus == 1 ? '#9ff7a2' : '#C372CA', paddingVertical: 2, paddingHorizontal: 2, borderRadius: 16, alignSelf: "flex-start", marginTop: 10 }}>
+                            <View style={{ backgroundColor: item.colorCode, paddingVertical: 2, paddingHorizontal: 2, borderRadius: 16, alignSelf: "flex-start", marginTop: 10 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
                                     {/* <View style={{ backgroundColor: '#57c95a', height: 20, width: 20, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
                                         <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM }}>L5</Text>
                                     </View> */}
 
-                                    <Text style={{ color: Color.COLOR.BLUE.LOTUS_BLUE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 10, marginRight: 10 }}>{item.approvedStatus == 0 ? "Pending" : item.approvedStatus == 1 ? "Approved  by Admin" : "Rejected by Admin"}</Text>
+                                    <Text style={{ color: Color.COLOR.WHITE.PURE_WHITE, fontSize: 11, fontFamily: FontFamily.FONTS.POPPINS.MEDIUM, marginLeft: 10, marginRight: 10 }}>{item.stateName}</Text>
                                 </View>
                             </View>
                         </View>
                         <View style={{}}>
-                            <Text style={{ color: '#FF2E00', fontSize: FontSize.MD, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, textAlign: 'right' }}>-{item.point}</Text>
+                            <Text style={{ color: '#FF2E00', fontSize: FontSize.MD, fontFamily: FontFamily.FONTS.POPPINS.SEMI_BOLD, textAlign: 'right' }}>{item.point}</Text>
                             <Text style={{ color: '#535C63', fontSize: FontSize.XS, fontFamily: FontFamily.FONTS.POPPINS.REGULAR, textAlign: 'right' }}>points</Text>
                         </View>
 
@@ -300,6 +339,38 @@ export default class Redemption extends Component {
         )
     }
 
+    financialYearSec = () => {
+        const onChangeFinancialYear = async (val) => {
+            this.setState({ selectedFinancialYearObj: val })
+            await this.setInitialStateData()
+            await this._apiCallRes()
+        }
+        return (
+            <>
+                <View style={{ flexDirection: "row" }}>
+                    <View style={{ flex: 0.7 }} />
+
+                    <View style={{ flex: 0.3 }}>
+                        <DropdownInputBox
+                            selectedValue={this.state.selectedFinancialYearObj.id ? this.state.selectedFinancialYearObj.id.toString() : "0"}
+                            data={this.state.financialYearArr}
+                            onSelect={(value) => onChangeFinancialYear(value)}
+                            headerText={""}
+                            additionalBoxStyle={{ borderColor: "#273441", borderWidth: 0, backgroundColor: "#fff", paddingVertical: 0, elevation: 0 }}
+                            isBackButtonPressRequired={true}
+                            isBackdropPressRequired={true}
+                            unSelectedTextColor={"#1F2B4D"}
+                            selectedTextColor={"#1F2B4D"}
+                            fontFamily={FontFamily.FONTS.INTER.SEMI_BOLD}
+                            fontSize={11}
+                            borderRadius={25}
+                        />
+                    </View>
+                </View>
+            </>
+        )
+    }
+
     modalSec = () => {
         return (
             <>
@@ -312,7 +383,8 @@ export default class Redemption extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.modalSec()}
-                {this.searchSec()}
+                {this.financialYearSec()}
+                {/* {this.searchSec()} */}
                 {/* {this.headingSec()} */}
                 {this.state.pageLoader ?
                     <View>

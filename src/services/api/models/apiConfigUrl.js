@@ -59,6 +59,15 @@ export const APP_LAST_URI = Object.freeze({
         method: "POST"
     },
 
+    
+    requestForPassword: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/requestForPassword",
+        isAuth: false,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+
 
     forgetpassword: {
         path: App_uri.BASE_URI + "api/v1/forgetpassword",
@@ -251,6 +260,15 @@ export const APP_LAST_URI = Object.freeze({
     //for version info
 
     //for prod
+    // getCurrentAppVersionInfo: {
+    //     path: App_uri.BASE_URI + "api/v2/common/getCurrentAppVersionInfo",
+    //     isAuth: false,
+    //     isPicLocation: false,
+    //     isEncrypt: false,
+    //     method: "POST"
+    // },
+
+    // for staging
     getCurrentAppVersionInfo: {
         path: App_uri.BASE_URI + "api/v2/common/getCurrentAppVersionInfo",
         isAuth: false,
@@ -258,15 +276,6 @@ export const APP_LAST_URI = Object.freeze({
         isEncrypt: false,
         method: "POST"
     },
-
-    // for staging
-    // getCurrentAppVersionInfo: {
-    //     path: App_uri.BASE_URI + "api/v1/common/getCurrentAppVersionInfo",
-    //     isAuth: false,
-    //     isPicLocation: false,
-    //     isEncrypt: false,
-    //     method: "POST"
-    // },
 
 
     ////////////////map section
@@ -281,7 +290,7 @@ export const APP_LAST_URI = Object.freeze({
 
     getCustomerStatus: {
         path: App_uri.CRM_BASE_URI + "api/v1/user/checkCustomerCurrentStatus",
-        isAuth: true,
+        isAuth: false,
         isPicLocation: false,
         isEncrypt: true,
         method: "POST"
@@ -506,7 +515,7 @@ export const APP_LAST_URI = Object.freeze({
     getUserMappedLastLevelLocations: {
         path: App_uri.CRM_BASE_URI + "api/v1/user/getUserMappedLastLevelLocations",
         isAuth: true,
-        isPicLocation: true,
+        isPicLocation: false,
         isEncrypt: true,
         method: "POST"
     },
@@ -641,7 +650,7 @@ export const APP_LAST_URI = Object.freeze({
     },
 
     getPassbookList: {
-        path: App_uri.LMS_BASE_URI + "lms/master/v1/getPassbookList",
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getPassbookList",
         isAuth: true,
         isPicLocation: false,
         isEncrypt: true,
@@ -649,7 +658,7 @@ export const APP_LAST_URI = Object.freeze({
     },
 
     getRedemptionHistory: {
-        path: App_uri.LMS_BASE_URI + "lms/master/v1/getRedemptionHistory",
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getRedemptionHistory",
         isAuth: true,
         isPicLocation: false,
         isEncrypt: true,
@@ -665,7 +674,7 @@ export const APP_LAST_URI = Object.freeze({
     },
 
     claimNow: {
-        path: App_uri.LMS_BASE_URI + "lms/master/v1/claimNow",
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/claimNow",
         isAuth: true,
         isPicLocation: false,
         isEncrypt: true,
@@ -738,7 +747,7 @@ export const APP_LAST_URI = Object.freeze({
         method: "POST"
     },
     fetchRedemptionHistory: {
-        path: App_uri.LMS_BASE_URI + "lms/master/v1/fetchRedemptionHistory",
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/fetchRedemptionHistory",
         isAuth: true,
         isPicLocation: false,
         isEncrypt: true,
@@ -871,5 +880,102 @@ export const APP_LAST_URI = Object.freeze({
         isEncrypt: true,
         method: "POST"
     },
+    updateCustomerDocuments: {
+        path: App_uri.CRM_BASE_URI + "api/v1/customerManagement/updateCustomerDocuments",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
 
+    getCustomerDocuments: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/getCustomerDocuments",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    addCustomerDocuments: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/addCustomerDocuments",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    getFinYear: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/getFinYear",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+
+    getCatalogueOfUser: {
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getCatalogueOfUser",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+
+    getCatalogueAndItemForUser: {
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getCatalogueAndItemForUser",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    addCatalogueCart: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/addCatalogueCart",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+
+    getCatalogueCartByTargetId: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/getCatalogueCartByTargetId",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    getCatalogueCartCountByTargetId: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/getCatalogueCartCountByTargetId",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    
+    deleteCatalogueCartByTargetId: {
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/deleteCatalogueCartByTargetId",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    getTargetUserPoint:{
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getTargetUserPoint",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    checkPanDoc:{
+        path: App_uri.LMS_BASE_URI + "lms/master/v1/checkPanDoc",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    getTdsForUser:{
+        path: App_uri.LMS_BASE_URI + "lms/redemption/v1/getTdsForUser",
+        isAuth: true,
+        isPicLocation: false,
+        isEncrypt: true,
+        method: "POST"
+    },
+    
+    
 })

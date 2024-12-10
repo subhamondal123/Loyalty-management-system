@@ -42,9 +42,12 @@ class UpdateLiftingForm extends Component {
             updateLiftingLoader: false,
             isDateCheck: true,
             docImgLoader: false,
-            selectedMonth: DateConvert.getDDthMonthNameYYYYformat(new Date()).month,
-            selectedYear: DateConvert.getDDthMonthNameYYYYformat(new Date()).year,
-            isDisabled: false
+            selectedMonth: DateConvert.getDDthMonthNameYYYYformatWithShortMonth(new Date()).month,
+            selectedYear: DateConvert.getDDthMonthNameYYYYformatWithShortMonth(new Date()).year,
+            isDisabled: false,
+            userInfo: {
+                customerId: ""
+            }
         }
     }
 
@@ -60,14 +63,17 @@ class UpdateLiftingForm extends Component {
     }
 
     _load = async () => {
-        console.log("this.props", JSON.stringify(this.props))
         await this._getProductHierarchyTypesSlNo()
-        await this.checkSameDayLifting()
+        // await this.checkSameDayLifting()
         // await this.getUnitData()
+        let userInfo = await StorageDataModification.userCredential({}, "get");
+        this.state.userInfo.customerId = userInfo.customerId
+        this.setState({ userInfo: this.state.userInfo })
     }
 
     checkSameDayLifting = async () => {
         let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
             "refUserId": this.props.route.params.propData.id.toString(),
         }
         let responseData = await MiddlewareCheck("checkSameDayLifting", reqData, this.props);
@@ -293,6 +299,7 @@ class UpdateLiftingForm extends Component {
 
     checkLiftingDateApiCall = async (date) => {
         let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
             "salesDate": DateConvert.formatYYYYMMDD(date)
         }
         let responseData = await MiddlewareCheck("checkLiftingDate", reqData, this.props);
@@ -394,7 +401,8 @@ class UpdateLiftingForm extends Component {
         if (imgData) {
             if (imgData.success) {
                 let req = {
-                    fileName: imgData.fileName
+                    "refCustomerId": this.state.userInfo.customerId.toString(),
+                    "fileName": imgData.fileName
                 }
                 let fileDownload = await MiddlewareCheck("geLMSFileDownloadPreview", req, this.props);
                 if (fileDownload.status == ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
@@ -428,13 +436,15 @@ class UpdateLiftingForm extends Component {
     }
 
     onSelectMonth = async (month, year, selectedMonthIndex) => {
+
         const date = new Date(Date.UTC(year, selectedMonthIndex, 1));
         this.state.fromDateObj.rawDate = date;
         this.state.fromDateObj.fromDate = DateConvert.getMonthYearName(date);
+
         this.setState({
             fromDateObj: this.state.fromDateObj,
         });
-        // await this.checkLiftingDateApiCall(date);
+        await this.checkLiftingDateApiCall(date);
 
     }
 
@@ -492,6 +502,7 @@ class UpdateLiftingForm extends Component {
 
     checkCappingValue = async () => {
         let reqData = {
+            "refCustomerId": this.state.userInfo.customerId.toString(),
             "salesDate": DateConvert.formatYYYYMMDD(this.state.fromDateObj.rawDate),
             "fromContactTypeId": this.props.route.params.data.contactTypeId.toString(),
             "toContactTypeId": this.props.route.params.propData.contactTypeId.toString(),
@@ -507,47 +518,48 @@ class UpdateLiftingForm extends Component {
         let boolData = responseData.success
         this.setState({ updateLiftingLoader: false });
         return boolData
-
     }
 
     _onSubmit = async () => {
-        console.log("this.props.route.params.data====", JSON.stringify(this.props.route.params.data));
         let validateFormData = validateData(this.state);
         if (validateFormData) {
-            let sameDayLiftCheck = await this.checkSameDayLifting()
-            if (!sameDayLiftCheck) {
-                let cappingCheck = await this.checkCappingValue()
-                if (cappingCheck) {
-                    let reqData = {
-                        "liftFromUserId": this.props.route.params.data.id.toString(),
-                        "liftFromUserTypeId": this.props.route.params.data.contactTypeId.toString(),
-                        "refUserId": this.props.route.params.propData.id.toString(),
-                        "refUserTypeId": this.props.route.params.propData.contactTypeId.toString(),
-                        "locationId": this.props.Sales360Redux.routeData.hierarchyDataId,
-                        "locationTypeId": this.props.Sales360Redux.routeData.hierarchyTypeId,
-                        "sales": modDocumentArr(this.state.documentArr, this.state.quantity, this.state.selectedUnit.id, this.state.fromDateObj.rawDate, this.state.locationObj)
-                    }
-                    this.setState({ updateLiftingLoader: true });
-                    console.log("req data=====", reqData)
-                    let responseData = await MiddlewareCheck("saveSecondarySales", reqData, this.props);
-                    console.log("responseeeeee dataaaa----", responseData)
-                    if (responseData) {
-                        if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
-                            this.props.navigation.goBack();
-                            Toaster.ShortCenterToaster(responseData.message);
-                            this.clearFormData();
-                        }
-                        else {
-                            Toaster.ShortCenterToaster(responseData.message)
-                        }
-                    }
-                    this.setState({ updateLiftingLoader: false });
+            // let sameDayLiftCheck = await this.checkSameDayLifting()
+            // if (!sameDayLiftCheck) {
+            let cappingCheck = await this.checkCappingValue()
+
+            if (cappingCheck) {
+                let reqData = {
+                    "refCustomerId": this.state.userInfo.customerId.toString(),
+                    "liftFromUserId": this.props.route.params.data.id.toString(),
+                    // "refCustomerId": this.state.userInfo.customerId.toString(),
+                    "liftFromUserTypeId": this.props.route.params.data.contactTypeId.toString(),
+                    "refUserId": this.props.route.params.propData.id.toString(),
+                    "refUserTypeId": this.props.route.params.propData.contactTypeId.toString(),
+                    "locationId": this.props.Sales360Redux.routeData.hierarchyDataId,
+                    "locationTypeId": this.props.Sales360Redux.routeData.hierarchyTypeId,
+                    "sales": modDocumentArr(this.state.documentArr, this.state.quantity, this.state.selectedUnit.id, this.state.fromDateObj.rawDate, this.state.locationObj)
                 }
+                this.setState({ updateLiftingLoader: true });
+                let responseData = await MiddlewareCheck("saveSecondarySales", reqData, this.props);
+
+                if (responseData) {
+                    if (responseData.status === ErrorCode.ERROR.ERROR_CODE.SUCCESS) {
+                        this.props.navigation.goBack();
+                        Toaster.ShortCenterToaster(responseData.message);
+                        this.clearFormData();
+                    }
+                    else {
+                        Toaster.ShortCenterToaster(responseData.message)
+                    }
+                }
+                this.setState({ updateLiftingLoader: false });
+                // }
             }
         }
     }
 
     _onReset = async () => {
+        this.setState({ isDateCheck: true })
         await this.clearFormData();
     }
 
